@@ -1,5 +1,5 @@
 <!---
-Spotter Example
+Spotter Examples
 Copyright (C) 2010 Semmy Purewal
 
 This library is free software; you can redistribute it and/or
@@ -22,62 +22,28 @@ the MIT and GPL licenses.
 
 <html>
  <head>
-  <script src="javascripts/jquery-1.4.2.min.js" type="text/javascript"></script>
-  <script src="javascripts/application.js" type="text/javascript"></script>
-  <script src="../src/spotter-min.js" type="text/javascript"></script>
-
-  <script>
-$(document).ready(function()  {
-  init();
-});
-  </script>
-
-
   <style>
-
 body  {
-  width: 500px;
-  margin-right: auto;
-  margin-left: auto;
+  margin: 100px auto 100px auto;;
+  width: 800px;
+  border: 1px solid black;
+  padding: 2em;
 }
-
-a  {
-  text-decoration: none;
-  font-weight: bold;
-  font-family: sans-serif;
-}
-
-.profile_image  {
-  float:left;
-  clear: both;
-  padding-right: 1em;
-}
-
-.tweet  {
-  padding-top: 10px;
-  border-top: 1px solid #ccc;
-  margin-bottom: 1em;
-  height: 48px;
-}
-
-.tweet_id  {
-  color: #111;
-  font-size:.5em;
-  margin-top:.3em;
-}
-
-.profile_image  {
-  padding-top: 6px;
-}
-
+li { margin-top: 2em; }
   </style>
 
  </head>
 
  <body>
-  <div id="container">
-   <div id="list_view">
-   </div>
-  </div>
+  <h2>Spotter Examples</h2>
+
+  <p>Here's a couple of examples that use spotter.</p>
+
+  <ul>
+   <li><a href="bieber.html">The Bieber Example</a>: This example alerts the user at 10 second intervals when there's a new tweet about Justin Bieber (which, at the time of this writing, is at least every 10 seconds).  The entire program (with the exception of Spotter) is in the source document.</li>
+
+   <li><a href="gadget.html">The Gadget Example</a>: This is example is slightly more interesting; it mimics the commonly seen Twitter gadget.  The current search term is 'oil spill.'  The JavaScript code can be found <a href="javascripts/application.js">here</a>.  This example uses the <a target="_blank" href="http://www.jquery.com">JQuery</a> library for selectors, animation, and insertions into the DOM.</li>
+  </ul>
+
  </body>
 </html>
