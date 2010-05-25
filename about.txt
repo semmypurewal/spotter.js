@@ -1,5 +1,5 @@
-Spotter is an observable client-side twitter search library written in JavaScript for
-use in browser-based real-time Twitter clients.
+Spotter is an observable client-side Twitter search library written in JavaScript for
+use in browser-based real-time Twitter application.
 
 It is based on the observer design pattern.  Clients register with a Spotter object
 and are only notified when the Spotter recieves new search data.  Spotter can be set to
@@ -7,10 +7,12 @@ search at a specified interval and notify all registered observers when new data
 returned, or it can search at intervals you specify in your code
 (this may be useful for API throttling).
 
-Spotter is easy to use, and it's free (as in freedom)!  See the attached LGPL license
+Spotter is easy to use and it's free (as in freedom)!  See the attached LGPL license
 for more information.
 
 **********
+var observerObject = new Object();
+
 //set up your notify function
 observerObject.notify = function(tweets)  {
   //if this is called, tweets will not be empty
@@ -31,6 +33,7 @@ That's all there is to it!
 
 The source package is divided up into the following directories:
 
+license.txt: info on using this in your program, and a copy of the LGPL
 about.txt: this file
 examples: simple clients using spotter
 src: the source code for spotter, normal and minified
