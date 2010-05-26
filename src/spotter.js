@@ -1,6 +1,8 @@
 /**
  * spotter.js
  * Copyright (C) 2010 Semmy Purewal
+ *
+ * @version .1
  */
 
 spotter = {}
@@ -8,7 +10,7 @@ spotter = {}
 Spotter = spotter;
 
 /**
- * spotterFactory()
+ * spotterFactory
  *
  * This is how you build spotter objects (you don't use a
  * constructor).  Note that the factory function keeps
@@ -20,34 +22,34 @@ spotter.spotterFactory = function(m, options) {
     /**
      * private constructor
      *
-     * Note that this is not the 'normal' way to build Spotter
-     * objects.  Use the class function spotterFactory() instead.
-     *
-     * If you *must* use this function, note that you must include
-     * the variable name as a parameter.  This is so that the
-     * Twitter API response can be sent to the correct object for
-     * processing.
-     *
-     * @param varName the name of the variable associated with this
-     * Spotter object
-     *
+     * @private
+     * @constructor
+     * @param {String} v the name of the variable associated with this Spotter object
      */
     function _spotter(v)  {
 	var varName = v;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
+	var module = eval("spotter.modules."+m+";")(options);	/* may not be the best way to do this */
 	this.observers = new Array();
 
-	/* may not be the best way to do this */
-	var module = eval("spotter.modules."+m+";")(options);
 
 	/**
 	 * spot
 	 *
-	 * This function searches at the spots at the specified time interval and
-	 * all listeners are notified when there is new data to report.
+	 * Execute the ajax request at the specified time intervals.  Note that
+	 * this function does not execute if the object is waiting on another
+	 * response.
 	 *
-	 * @param {Number} seconds, optional
+	 *
+	 * @member Spotter
+	 * @param {Number} optional parameter represeting the number of seconds
+	 *        between each request.  If this parameter is not provided, the
+	 *        function performs a single request.
+	 *
+	 * TODO: set up a time out so that if the last request doesn't return 
+	 *       the remaining requests are not blocked
+	 *
 	 */
 	this.spot = function(seconds)  {
 	    if((!seconds || seconds < 1) && lastCallReturned)  {
@@ -64,13 +66,13 @@ spotter.spotterFactory = function(m, options) {
 	}
 
 	/**
-	 * searchCallBack
+	 * callback
 	 *
-	 * recieves new tweets from the twitter api
-	 * and notifies observers of results
-	 * notifies observers of results
-	 *
-	 * @param {JSON} result from the twitter API
+	 * Receive the response from the ajax request and send it
+	 * to the appropriate module for processing.  Removes the
+	 * defunct script tag from the DOM
+	 * @member Spotter
+	 * @param {Object} result from the API
 	 */
 	this.callback  = function(data)  {
 	    var results = module.callback(data);
@@ -79,9 +81,9 @@ spotter.spotterFactory = function(m, options) {
 	}
 
 	/**
-	 * Makes the ajax request to the Twitter API by inserting a script
-	 * tag.
+	 * Function that actually makes the request.
 	 *
+	 * @private
 	 * @param {String} url the json request URL
 	 */
 	function request(url)  {
@@ -96,10 +98,13 @@ spotter.spotterFactory = function(m, options) {
 	}
 
 	/********** OBSERVABLE INTERFACE ***************/
+
 	/**
 	 * Register an observer with this twitter watcher
-	 * @param {Observer} observer this method verifies that the notify method is present
 	 *
+	 * @member Spotter
+	 * @param {Object} observer this method verifies that the notify method is present
+	 * @throws TypeError a TypeError is thrown if the parameter does not implement notify
 	 */
 	this.registerObserver = function(observer) {
 	    if(observer.notify != undefined && typeof observer.notify == 'function')
@@ -109,12 +114,15 @@ spotter.spotterFactory = function(m, options) {
 	}
 
 	/**
-	 * Notify this twitter watcher's observer
+	 * Notify this observable's observers
+	 *
+	 * @param {Object} data that will be sent to the observers
 	 */
-	this.notifyObservers = function(tweets)  {
+	this.notifyObservers = function(data)  {
 	    for(var i in this.observers)
-		this.observers[i].notify(tweets);
+		this.observers[i].notify(data);
 	}
+
 	/********** END OBSERVABLE INTERFACE ***************/
 
     }//end spotter constructor
