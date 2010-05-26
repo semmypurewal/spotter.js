@@ -5,7 +5,7 @@ Copyright (C) 2010 Semmy Purewal
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
 License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+version 3 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -44,16 +44,17 @@ Spotter.spotterFactory = function() {
  * Twitter API response can be sent to the correct object for
  * processing.
  *
- * @param var_name the name of the variable associated with this
+ * @param varName the name of the variable associated with this
  * Spotter object
  *
  */
-function Spotter(var_name)  {
-    this.var_name = var_name;
-    this.refresh_url = "";
+function Spotter(varName)  {
+    this.varName = varName;
+    this.refreshURL = "";
     this.lastCallReturned = true;
     this.lastScriptTag = null;
     this.observers = new Array();
+    this.lastTrends = null;
 }
 
 /**
@@ -74,7 +75,8 @@ Spotter.prototype.searchInterval = function(search_string, seconds)  {
 /**
  * search
  *
- * This function does a single search. After the search is done, 
+ * This function sets up a request for a single search. It then calls the 
+ * request function with the appropriate url. After the search is done, 
  * all listeners are notified if there is new data to report.
  *
  * It does nothing if this Spotter is waiting for another
@@ -85,28 +87,85 @@ Spotter.prototype.searchInterval = function(search_string, seconds)  {
 Spotter.prototype.search = function(search_string)  {
     if(this.lastCallReturned)  {
 	var url = 'http://search.twitter.com/search.json'
-	url += this.refresh_url != ""?this.refresh_url:'?q='+escape(search_string);
-	url += '&callback='+this.var_name+'.searchCallBack';
+	url += this.refreshURL != ""?this.refreshURL:'?q='+escape(search_string);
+	url += '&callback='+this.varName+'.searchCallBack';
 	url += '&random='+Math.floor(Math.random()*10000);
-	var head = document.getElementsByTagName("head");
-	var script = document.createElement('script');
-	script.id = 'twitter_search_script'+this.var_name;
-	script.type = 'text/javascript';
-	script.src = url;
-	if(this.lastScriptTag != null) head[0].removeChild(this.lastScriptTag);
-	head[0].appendChild(script);
-	this.lastScriptTag = script;
+	this.request(url);
     }
 }
 
-
 /**
- * This is the callback function
+ * searchCallBack
+ *
+ * recieves new tweets from the twitter api
+ * and notifies observers of results
+ * notifies observers of results
+ *
+ * @param {JSON} result from the twitter API
  */
 Spotter.prototype.searchCallBack  = function(data)  {
     var tweets = data['results'];
-    this.refresh_url = data['refresh_url'];
+    this.refreshURL = data['refresh_url'];
     if(tweets.length != 0) this.notifyObservers(tweets);
+    this.lastCallReturned = true;
+}
+
+/**
+ * trendsInterval
+ *
+ * This function checks trends at the specified time intervals and
+ * all listeners are notified when there is new data to report.
+ *
+ * @param {Object} options option for twitter API
+ * @param {Integer} time
+ */
+ Spotter.prototype.trendsInterval = function(seconds, options)  {
+    this.trends(options);
+    var obj = this;
+    this.intervalTImer = setInterval(function() { obj.trends(options); }, seconds*1000);
+}
+
+/**
+ * trends
+ * 
+ * Sets up a request to the current trending topics on Twitter.  It
+ * calls the request function with the appropriate url.  After the
+ * search is done, the request function notifies the observers
+ * if there is new data to report
+ *
+ * @param {Dictionary} options currently allows for the exclusion of hashtags
+ *
+ * TODO: add support for all twitter API options for trends
+ */
+Spotter.prototype.trends = function(options)  {
+    if(this.lastCallReturned) {
+	var url = "http://search.twitter.com/trends.json?";
+	if(options != undefined && options['exclude'] != undefined) url+="exclude="+options['exclude'];
+	url+="&callback="+this.varName+".trendsCallBack";
+	//alert(url);
+	this.request(url);
+    }
+}
+
+/**
+ * trendsCallBack
+ *
+ * calculates the difference between old and new trends and 
+ * notifies observers of results
+ *
+ * @param {JSON} result from the twitter API
+ */
+Spotter.prototype.trendsCallBack = function(data)  {
+    var trends = data['trends'];
+    if(this.lastTrends == null)
+	result = {"added":trends, "removed":{}, "trends":trends};
+    else  {
+	var tempArray = this.complements(trends, this.lastTrends);
+	var changeArray = this.changes(trends, this.lastTrends);
+	result = {"added":tempArray[0],"removed":tempArray[1], "trends":trends, "changes":changeArray};
+    }
+    this.lastTrends = trends;
+    if(result['added'].length > 0 || result['removed'].length > 0) this.notifyObservers(result);
     this.lastCallReturned = true;
 }
 
@@ -115,12 +174,14 @@ Spotter.prototype.searchCallBack  = function(data)  {
 
 /**
  * Register an observer with this twitter watcher
- * @param observer this method verifies that the notify method is present
+ * @param {Observer} observer this method verifies that the notify method is present
+ *
  */
 Spotter.prototype.registerObserver = function(observer) {
-    if(observer.notify != undefined)  {
+    if(observer.notify != undefined && typeof observer.notify == 'function')
 	this.observers.push(observer);
-    }
+    else
+	throw new TypeError('Spotter: observer must implement a notify method.');
 }
 
 /**
@@ -130,3 +191,89 @@ Spotter.prototype.notifyObservers = function(tweets)  {
     for(var i in this.observers)
 	this.observers[i].notify(tweets);
 }
+
+/********** END OBSERVABLE INTERFACE ***************/
+
+
+/********** 'PRIVATE' HELPER FUNCTIONS ***************/
+
+
+/**
+ * Returns an array of integers that represent
+ * the indices of the elements of b in the elements
+ * of a.  Currently assumes these are trend objects.
+ * Also assumes that all elements in a and b are uniq
+ * (i.e. they are sets)
+ *
+ * For example
+ *
+ * a:      ["a","b","c","d"]
+ * b:      ["c","b","d","f"]
+ * result: [-1 , 1 , 0 , 2 ]  
+ *
+ * @param {Array} An array of length n
+ * @param {Array} An array of length n
+ *
+ * TODO: make this more general
+ * TODO: make this private
+ */
+Spotter.prototype.changes = function(a,b)  {
+    /*a = [{'name':'a'},{'name':'b'},{'name':'c'},{'name':'d'}];
+      b = [{'name':'c'},{'name':'b'},{'name':'d'},{'name':'f'}];*/
+
+    var result = new Array();
+    var indices = new Object();
+    for(var i in b)
+	indices[b[i]]==undefined?indices[b[i]['name']]=parseInt(i):null;
+    for(var i in a)
+	result[i] = indices[a[i]['name']]==undefined?-1:indices[a[i]['name']];
+    return result;
+}
+
+/**
+ * returns an array of arrays.  the first
+ * are the elements in a that are not in b
+ * and the second are the elements in b that
+ * are not in a.
+ *
+ * For now this assumes a trends object
+ *
+ * TODO: make private
+ * TODO: make more general (for arbitrary arrays)
+ * TODO: use the changes algorithm as a subroutine
+ *
+ */
+Spotter.prototype.complements = function(a, b)  {
+    var counts = new Object();
+    var aMinusB = new Array();
+    var bMinusA = new Array();
+    for(var i in a)
+	counts[a[i]]==undefined?counts[a[i]['name']]=i:null;
+    for(var j in b)
+	counts[b[j]['name']]==null?bMinusA.push(b[j]):counts[b[j]['name']]=-1;
+    for(var k in counts)
+	counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+    return [aMinusB,bMinusA];
+}
+
+
+/**
+ * Makes the ajax request to the Twitter API by inserting a script
+ * tag.
+ *
+ * @param {String} url the json request URL
+ * 
+ * TODO: make this private somehow
+ */
+Spotter.prototype.request = function(url)  {
+    var head = document.getElementsByTagName("head");
+    var script = document.createElement('script');
+    script.id = 'spotter_search_request'+this.varName;
+    script.type = 'text/javascript';
+    script.src = url;
+    if(this.lastScriptTag != null) head[0].removeChild(this.lastScriptTag);
+    head[0].appendChild(script);
+    this.lastScriptTag = script;
+}
+
+/********** END 'PRIVATE' HELPER FUNCTIONS ***************/

@@ -33,9 +33,9 @@ function init()  {
   var observerObject = new Object();
 
   //set up your notify function
-  observerObject.notify = function(tweets)  {
-    alert(tweets[0].text);
-  }
+/* observerObject.notify = function(tweets)  {
+    alert(tweets[0]['text']);
+  }*/
 
   //create your spotter
   var spotter = Spotter.spotterFactory();

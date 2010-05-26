@@ -25,15 +25,15 @@ spotter = Spotter.spotterFactory();
 //register your observer
 spotter.registerObserver(observerObject);
 
-//look for new Justin Beiber results every 10 seconds
-spotter.intervalSearch("justin beiber", 10); 
+//look for new Justin Bieber results every 10 seconds
+spotter.intervalSearch("justin bieber", 10); 
 **********
 
 That's all there is to it!
 
-The source package is divided up into the following directories:
+This source package is divided up into the following documents/directories:
 
-license.txt: info on using this in your program, and a copy of the LGPL
-about.txt: this file
+license.txt/.html: info on using this in your program, and a copy of the LGPL
+about.txt/.html: this file
 examples: simple clients using spotter
 src: the source code for spotter, normal and minified

@@ -1,0 +1,93 @@
+<!---
+Spotter Examples
+Copyright (C) 2010 Semmy Purewal
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+Note that this example also uses JQuery, which is dual licensed under
+the MIT and GPL licenses.
+-->
+
+<html>
+ <head>
+  <style>
+body  {
+  margin: 0 auto 0 auto;;
+  width: 800px;
+  border: 1px solid black;
+  padding: 2em;
+}
+
+pre  {
+  margin: 4em;
+  border: 2px solid black;
+  padding: 1em;
+  background: #ccc;
+}
+
+li { margin-top: 2em; }
+  </style>
+
+ </head>
+
+ <body>
+  <h2>Spotter</h2>
+
+<p>Spotter is an observable client-side Twitter search library written in JavaScript for
+use in browser-based real-time Twitter applications.</p>
+
+<p>It is based on the observer design pattern.  Clients register with a Spotter object
+and are only notified when the Spotter recieves new search data.  The Spotter can be set to
+search at a specified interval and notify all registered observers when new data is
+returned, or it can search at intervals you specify in your code
+(this may be useful for API throttling).</p>
+
+<p>Spotter is easy to use and it's free (as in freedom)!  See the attached <a href="license.txt">LGPL</a> license
+for more information.</p>
+
+<p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this
+is all that's necessary:</p>
+
+<pre><tt>//create your observing object
+var observerObject = new Object();
+
+//create your spotter
+var spotter = Spotter.spotterFactory();
+
+//set up your notify function
+observerObject.notify = function(tweets)  {
+  //if this is called, tweets will not be empty
+  alert(tweets[0]['text']);
+}
+
+//register your observer
+spotter.registerObserver(observerObject);
+
+//look for new Justin Bieber results every 10 seconds
+spotter.intervalSearch("justin bieber", 10); </tt></pre>
+
+<p>That's all there is to it!</p>
+
+<p>This source package is divided up into the following documents/directories:</p>
+
+<ul>
+<li><a href="license.txt">license.txt</a>: info on using this in your program, and a copy of the LGPL</li>
+<li><a href="about.txt">about.txt</a>: this file as a text document</li>
+<li><a href="examples">examples</a>: simple applications using Spotter</li>
+<li><a href="src">src</a>: the source code for spotter, <a href="src/spotter.js">normal</a> and <a href="src/spotter-min.js">minified</a></li>
+</ul>
+
+ </body>
+</html>
