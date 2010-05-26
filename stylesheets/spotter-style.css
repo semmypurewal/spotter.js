@@ -1,0 +1,16 @@
+body  {
+  margin: 0 auto 0 auto;;
+  width: 800px;
+  padding: 2em;
+}
+
+pre  {
+  margin: 4em;
+  padding: 1em;
+  border: 2px solid black;
+  background: #ccc;
+}
+
+li {
+  margin-top: 1em;
+}

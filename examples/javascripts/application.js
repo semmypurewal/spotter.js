@@ -24,7 +24,7 @@ function init()  {
     var spotter = Spotter.spotterFactory();
     var lc = new ListController($('#list_view'));
     spotter.registerObserver(lc);
-    spotter.searchInterval('oil spill',10);
+    spotter.searchInterval('oil spill',5);
 }
 
 function ListController(view)  {

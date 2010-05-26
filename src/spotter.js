@@ -63,13 +63,13 @@ function Spotter(varName)  {
  * This function searches at the specified time intervals and
  * all listeners are notified when there is new data to report.
  *
- * @param search_string
+ * @param searchString
  * @param time
  */
-Spotter.prototype.searchInterval = function(search_string, seconds)  {
-    this.search(search_string);
+Spotter.prototype.searchInterval = function(searchString, seconds)  {
+    this.search(searchString);
     var obj = this;
-    this.intervalTImer = setInterval(function() { obj.search(search_string); }, seconds*1000);
+    this.intervalTImer = setInterval(function() { obj.search(searchString); }, seconds*1000);
 }
 
 /**
@@ -82,12 +82,12 @@ Spotter.prototype.searchInterval = function(search_string, seconds)  {
  * It does nothing if this Spotter is waiting for another
  * search to return.
  *
- * @param search_string
+ * @param searchString
  */
-Spotter.prototype.search = function(search_string)  {
+Spotter.prototype.search = function(searchString)  {
     if(this.lastCallReturned)  {
 	var url = 'http://search.twitter.com/search.json'
-	url += this.refreshURL != ""?this.refreshURL:'?q='+escape(search_string);
+	url += this.refreshURL != ""?this.refreshURL:'?q='+escape(searchString);
 	url += '&callback='+this.varName+'.searchCallBack';
 	url += '&random='+Math.floor(Math.random()*10000);
 	this.request(url);
