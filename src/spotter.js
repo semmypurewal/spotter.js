@@ -54,7 +54,10 @@ spotter.spotterFactory = function(m, options) {
 	this.spot = function(seconds)  {
 	    if((!seconds || seconds < 1) && lastCallReturned)  {
 		var url = module.url();
-		url += '&callback='+varName+'.callback';
+		if(url instanceof Object && url.callbackParam != undefined)
+		    url = url.url+'&'+url.callbackParam+'='+varName+'.callback';
+		else
+		    url += '&callback='+varName+'.callback';
 		url += '&random='+Math.floor(Math.random()*10000);
 		request(url);
 	    }
@@ -74,9 +77,10 @@ spotter.spotterFactory = function(m, options) {
 	 * @member Spotter
 	 * @param {Object} result from the API
 	 */
-	this.callback  = function(data)  {
-	    var results = module.callback(data);
-	    if(results.update) this.notifyObservers(results);
+	this.callback  = function(rawData)  {
+	    var processedData = module.callback(rawData); //send the raw data to the module for processing
+	    //now the processedData has an 'update' attribute and a 'data' attribute
+	    if(processedData.update) this.notifyObservers(processedData.data);
 	    lastCallReturned = true;
 	}
 

@@ -14,6 +14,13 @@ if(!spotter.modules.twitter) spotter.modules.twitter = {};
 else if(typeof spotter.modules.twitter != "object")
     throw new Error("spotter.modules.twitter is not an object!");
 
+/**
+ * Required options: searchString
+ * Other available options: ?
+ * callback return format: {update, data}
+ * update: true/false depending on whether there are new tweets
+ * data: the tweet objects themselves
+ */
 spotter.modules.twitter.search = function(options)  {
     var refreshURL = "";
     var searchString = options.searchString;
@@ -27,10 +34,12 @@ spotter.modules.twitter.search = function(options)  {
 	return url;
     }
 
-    var callback = function(data)  {
-	refreshURL = data.refresh_url;
-	if(data.results.length > 0) data.results.update=true;
-	return data.results;
+    var callback = function(rawData)  {
+	var processedData = {};
+	refreshURL = rawData.refresh_url;
+	processedData.update = (rawData.results.length>0)?true:false;
+	processedData.data = rawData.results;
+	return processedData;;
     }
 
     var module = {};
@@ -39,6 +48,15 @@ spotter.modules.twitter.search = function(options)  {
     return module;
 };
 
+
+/**
+ * Required options:
+ * Other available options: exclude:hashtags
+ * callback return format: {added,removed,trends}
+ * added: new trends since the last call
+ * removed: removed trends since the last call
+ * trends: all trends
+ */
 spotter.modules.twitter.trends = function(options)  {
     var lastTrends;
 
@@ -48,18 +66,18 @@ spotter.modules.twitter.trends = function(options)  {
 	return url;
     }
 
-    var callback = function(data)  {
-	var trends = data['trends'];
+    var callback = function(rawData)  {
+	var processedData = {};
+	var trends = rawData.trends;
 	if(lastTrends == null)
-	    result = {"added":trends, "removed":{}, "trends":trends};
+	    processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
 	else  {
-	    var tempArray = complements(trends, lastTrends);
-	    var changeArray = changes(trends, lastTrends);
-	    result = {"added":tempArray[0],"removed":tempArray[1], "trends":trends, "changes":changeArray};
+	    var tempArray = complements(rawData.trends, lastTrends);
+	    processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
 	}
-	lastTrends = trends;
-	if(result['added'].length > 0 || result['removed'].length > 0) result.update=true;
-	return result;
+	lastTrends = rawData.trends;
+	processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
+	return processedData;
     }
 
 

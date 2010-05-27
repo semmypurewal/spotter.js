@@ -7,7 +7,7 @@ function init()  {
     var spotter = Spotter.spotterFactory("delicious.recent");
     var lc = new ListController($('#list_view'));
     spotter.registerObserver(lc);
-    spotter.spot(3);
+    spotter.spot(40);
 }
 
 function ListController(view)  {
@@ -16,7 +16,6 @@ function ListController(view)  {
 
 
 ListController.prototype.notify = function(results)  {
-    results = results.data;
     for(var t in results)  {
 	var temp = $("<div></div>");
 	$(temp).attr('class','link');

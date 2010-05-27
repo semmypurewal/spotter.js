@@ -1,0 +1,51 @@
+<html>
+ <head>
+  <script src="../src/spotter.js" type="text/javascript"></script>
+  <script>
+
+function init()  {
+  var testBoolean = true;
+
+  document.write("creating spotter object...");
+  var spotter1 = Spotter.spotterFactory();
+  if(spotter1) document.write("passed"); else document.write("failed");
+  document.write("<br/>");
+
+  document.write("testing changes method...");
+  var arrayA = [{"name":"a"},{"name":"b"},{"name":"c"},{"name":"d"}];
+  var arrayB = [{"name":"c"},{"name":"b"},{"name":"d"},{"name":"f"}];
+  var answer = [-1,1,0,2];
+  var result = spotter1.changes(arrayA,arrayB);
+  if(equals(result,answer)) document.write("passed"); else document.write("failed");
+  document.write("<br/>");
+
+  document.write("testing complements method...");
+  arrayA = [{"name":"a"},{"name":"b"},{"name":"c"},{"name":"d"},{"name":"e"}];
+  arrayB = [{"name":"c"},{"name":"d"},{"name":"e"},{"name":"f"},{"name":"g"}];
+  answer = [[{"name":"a"},{"name":"b"}],[{"name":"f"},{"name":"g"}]];
+  result = spotter1.complements(arrayA,arrayB);
+  if(equals(result[0],answer[0])&&equals(result[1],answer[1])) document.write("passed"); else document.write("failed");
+}
+
+function equals(objA, objB)  {
+  var result = true;
+  if(typeof objA != typeof objB || objA.length != objB.length)
+    result = false;
+  else if(objA instanceof Object && objB instanceof Object)  {
+    for(var i in objA)  {
+      if(!equals(objA[i],objB[i]))
+        result = false;
+    }
+  }
+  else if(objA != objB)
+    result = false;
+  return result;
+}
+
+  </script>
+  
+
+ </head>
+ <body onload="init();">
+ </body>
+</html>
