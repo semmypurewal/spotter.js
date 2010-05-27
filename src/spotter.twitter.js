@@ -1,5 +1,5 @@
 /**
- * spotter.twitter.search.js
+ * spotter.twitter.js
  * Copyright (C) 2010 Semmy Purewal
  */
 
