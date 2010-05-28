@@ -15,15 +15,19 @@ else if(typeof spotter.modules.flickr != "object")
     throw new Error("spotter.modules.flickr is not an object!");
 
 spotter.modules.flickr.search = function(options)  {
-    if(options == undefined || options.api_key == undefined || options.searchString == undefined)
-	throw new Error("flickr module requires an api_key and a searchString to be defined as an option");
+    if(options == undefined || options.api_key == undefined || (options.searchString == undefined && options.tags == undefined))
+	throw new Error("flickr module requires an api_key and a searchString or tags to be defined as an option");
 
     var api_key = options.api_key;
     var searchString = options.searchString;
+    var tags = options.tags;
+    
     
     var url = function()  {
 	var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
-	url += '&api_key='+api_key+'&format=json&content_type=1&text='+escape(searchString);
+	url += '&api_key='+api_key+'&format=json&content_type=1';
+	if(tags != undefined) url+= '&tags='+escape(tags);
+	if(searchString != undefined) url+= '&text='+escape(searchString);
 	return {url:url, callbackParam:"jsoncallback"};
     }
 

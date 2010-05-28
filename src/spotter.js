@@ -31,8 +31,8 @@ spotter.spotterFactory = function(m, options) {
 	var lastCallReturned = true;
 	var lastScriptTag = null;
 	var module = eval("spotter.modules."+m+";")(options);	/* may not be the best way to do this */
-	this.observers = new Array();
-
+	var observers = new Array();
+	var intervalTimer = null;
 
 	/**
 	 * spot
@@ -64,7 +64,7 @@ spotter.spotterFactory = function(m, options) {
 	    else  {
 		this.spot();
 		var obj = this;
-		this.intervalTImer = setInterval(function() { obj.spot(); }, seconds*1000);		
+		intervalTimer = setInterval(function() { obj.spot(); }, seconds*1000);		
 	    }
 	}
 
@@ -83,6 +83,25 @@ spotter.spotterFactory = function(m, options) {
 	    if(processedData.update) this.notifyObservers(processedData.data);
 	    lastCallReturned = true;
 	}
+
+
+	/**
+	 * stop
+	 *
+	 * Stops this spotter if it is currently spotting.
+	 * @member Spotter
+	 * @throws Error if you try to stop a stopped spotter
+	 */
+	this.stop = function()  {
+	    if(intervalTimer == null)
+		throw new Error("You can't stop a stopped spotter!");
+	    else  {
+		var head = document.getElementsByTagName("head");
+		if(lastScriptTag != null) head[0].removeChild(lastScriptTag);
+		clearInterval(intervalTimer);
+	    }
+	}
+
 
 	/**
 	 * Function that actually makes the request.
@@ -112,7 +131,7 @@ spotter.spotterFactory = function(m, options) {
 	 */
 	this.registerObserver = function(observer) {
 	    if(observer.notify != undefined && typeof observer.notify == 'function')
-		this.observers.push(observer);
+		observers.push(observer);
 	    else
 		throw new TypeError('Spotter: observer must implement a notify method.');
 	}
@@ -123,8 +142,8 @@ spotter.spotterFactory = function(m, options) {
 	 * @param {Object} data that will be sent to the observers
 	 */
 	this.notifyObservers = function(data)  {
-	    for(var i in this.observers)
-		this.observers[i].notify(data);
+	    for(var i in observers)
+		observers[i].notify(data);
 	}
 
 	/********** END OBSERVABLE INTERFACE ***************/
