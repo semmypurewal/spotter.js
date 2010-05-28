@@ -63,9 +63,7 @@ spotter.modules.delicious.recent = function(options)  {
 	    result = false;
 	return result;
     }
+
+    return {url:url, callback:callback};
     
-    var module = {};
-    module.url = url;
-    module.callback = callback;
-    return module;
 }

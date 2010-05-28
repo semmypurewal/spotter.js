@@ -30,9 +30,13 @@ spotter.spotterFactory = function(m, options) {
 	var varName = v;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
-	var module = eval("spotter.modules."+m+";")(options);	/* may not be the best way to do this */
 	var observers = new Array();
 	var intervalTimer = null;
+
+	var module = eval("spotter.modules."+m+";")(options);	/* may not be the best way to do this */
+
+	if(module == undefined)
+	    throw new Error("Module " + m + " not found!");
 
 	/**
 	 * spot
@@ -145,9 +149,7 @@ spotter.spotterFactory = function(m, options) {
 	    for(var i in observers)
 		observers[i].notify(data);
 	}
-
 	/********** END OBSERVABLE INTERFACE ***************/
-
     }//end spotter constructor
 
     this.instanceCount = Spotter.instanceCount == null?1:Spotter.instanceCount++;

@@ -22,7 +22,6 @@ spotter.modules.flickr.search = function(options)  {
     var searchString = options.searchString;
     var tags = options.tags;
     
-    
     var url = function()  {
 	var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
 	url += '&api_key='+api_key+'&format=json&content_type=1';
@@ -34,7 +33,6 @@ spotter.modules.flickr.search = function(options)  {
     var callback = function(rawData)  {
 	var processedData = {};
 	var photos = rawData.photos.photo;
-	//build the url for each photo before we send it back
 	for(i in photos)  {
 	    photos[i].url = buildPhotoURL(photos[i]);
 	    photos[i].user_url = "http://www.flickr.com/"+photos[i].owner;
@@ -44,17 +42,11 @@ spotter.modules.flickr.search = function(options)  {
 	return processedData;
     }
 
-
     /** private method that builds a photo URL from a photo object **/
     function buildPhotoURL(photo)  {
 	var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
 	return u;
     }
 
-
-
-    var module = {};
-    module.url = url;
-    module.callback = callback;
-    return module;
+    return {url:url, callback:callback};
 }

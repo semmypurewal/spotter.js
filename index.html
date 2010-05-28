@@ -13,13 +13,22 @@ Copyright (C) 2010 Semmy Purewal
   <a href="index.html">home</a> <a href="examples">examples</a> <a href="src">download</a> <a href="doc">documentation</a>
 
 <p>Spotter is an observable client-side Twitter search library written in JavaScript for
-use in browser-based real-time Twitter applications.</p>
+use in browser-based real-time JSON feed applications.</p>
 
-<p>It is based on the observer design pattern.  Clients register with a Spotter object
-and are only notified when the Spotter recieves new search data.  The Spotter can be set to
-search at a specified interval and notify all registered observers when new data is
-returned, or it can search at intervals you specify in your code
-(this may be useful for API throttling).</p>
+
+<h3>Features</h3>
+<ul>
+ <li>Current support for Twitter (search and trends), Flickr (search), and Delicious (recents)</li>
+ <li>Completely client-side, no need to for clients to hit your server for updates</li>
+ <li>Flexible enough for real-time applications needing results within 1 second to those needing results within 30 minutes or longer</li>
+ <li>Extendible via a simple modular design</li>
+ <li>OOP design allows you to easily integrate it into your OOP designs, but OOP is not necessary</li>
+</ul>
+
+<p>Spotter's interface is based on the Observer design pattern.  Observer objects (those that implement
+the notify function) register with a Spotter object and are only notified when the Spotter
+recieves new data.  You can also use Spotter to send requests at specified intervals in your
+code.</p>
 
 <p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this
 is all that's necessary:</p>
@@ -43,6 +52,15 @@ spotter.registerObserver(observerObject);
 spotter.spot(10); </tt></pre>
 
 <p>That's all there is to it!</p>
+
+<p>Spotter modules are based on the Strategy design pattern.  To implement one, you build a
+function that returns an object with a 'url' function and a 'process' function.  The url
+function builds the URL associated with the feed (from options sent to the Spotter object via
+the spotterFactory() method).  The process function determines if the feed actually has new
+data and passes the processed data back to the spotter object who returns it to the client.</p>
+
+<p>If you follow the convention of naming your module function spotter.modules.[service-name].[feed] then
+spotter will auto-magically load it if you include it in your Javascript source file!</p>
 
 </ul>
 

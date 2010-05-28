@@ -42,10 +42,8 @@ spotter.modules.twitter.search = function(options)  {
 	return processedData;;
     }
 
-    var module = {};
-    module.url = url;
-    module.callback = callback;
-    return module;
+    return {url:url, callback:callback};
+
 };
 
 
@@ -140,10 +138,6 @@ spotter.modules.twitter.trends = function(options)  {
 	    counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
 	return [aMinusB,bMinusA];
     }
-    
-    
-    var module = {};
-    module.url = url;
-    module.callback = callback;
-    return module;
+
+    return {url:url, callback:callback};    
 }
