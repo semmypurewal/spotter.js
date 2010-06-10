@@ -24,7 +24,7 @@ else if(typeof spotter.modules.delicious != "object")
 spotter.modules.delicious.recent = function(options)  {
     var lastTop;
     var url = function()  {
-	var url = 'http://feeds.delicious.com/v2/json/recent/?count=10';
+	var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
 	return url;
     }
 
