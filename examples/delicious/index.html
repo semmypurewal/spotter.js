@@ -27,12 +27,12 @@ body  {
   width: 800px;
   margin-right: auto;
   margin-left: auto;
+  font-family: sans-serif;
 }
 
 a  {
   text-decoration: none;
   font-weight: bold;
-  font-family: sans-serif;
 }
 
 a:hover {
@@ -69,6 +69,32 @@ a:hover {
 
 }
 
+#message_view  {
+  border-radius: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  background: cyan;
+  margin: 0 0 1em 0;
+  padding: .25em .5em .25em .5em;
+  display: none;
+}
+
+.refresh_count  {
+  font-weight: bold;
+}
+
+.refresh_link  {
+  font-weight: normal;
+  color: blue;
+}
+
+#container  {
+  border: solid 1px #ccc;
+  border-radius: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  padding: 1em;
+}
 
   </style>
 
@@ -77,7 +103,10 @@ a:hover {
  <body>
   <a href="../index.html">&lt;&lt; back to examples</a><br/><br/>
   <div id="container">
-   <div id="list_view">
+   <div id="message_view">
+   </div>
+
+   <div id="results_list">
    </div>
   </div>
  </body>

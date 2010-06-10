@@ -5,40 +5,60 @@
 
 function init()  {
     var spotter = Spotter.spotterFactory("delicious.recent");
-    var lc = new ListController($('#list_view'));
+    lc = new ListController($('#results_list'));
     spotter.registerObserver(lc);
     spotter.spot(30);
 }
 
 function ListController(view)  {
     this.view = view;
+    this.firstNotify = true;
+    this.freshResults = [];
+}
+
+ListController.prototype.refresh = function()  {
+    $("#message_view").hide();
+    var num = this.freshResults.length;
+    var results_view = $("<div></div>");
+    results_view.hide();
+    results_view.attr('class','results_view');
+    for(var i = 0; i < num; i++)  {
+	results_view.prepend(this.freshResults[i]);
+    }
+    for(i = 0; i < num; i++) this.freshResults.shift();
+    $(this.view).prepend(results_view);
+    results_view.fadeIn();
 }
 
 ListController.prototype.notify = function(results)  {
-    var results_view = $("<div></div>");
-    $(results_view).attr('class','results_view');
     for(var t = 0; t < results.length; t++)  {
 	var temp = $("<div class='link'></div>");
 	temp.append("<p class='link_url'><a target='_blank' class='delicious_link' href='"+results[t]['u']+"'>"+results[t]['d']+"</a></p>");
 	temp.append("<p class='user'>via <a target='_blank' class='delicious_user' href='http://www.delicious.com/"+results[t]['a']+"'>"+results[t]['a']+"</a></p>");
-
 	var tags = results[t]['t'];
 	var tagString = "";
 	for(var i=0; i < tags.length; i++)  {
-	    if(i !== tags.length-1)
+	    if(i !== tags.length-1)  {
 		tagString += tags[i]+", ";
-	    else
+	    }
+	    else  {
 		tagString += tags[i];
+	    }
 	}
-
+	
 	temp.append("<p class='tags'>tags: "+tagString+"</p>");
 	temp.append("<p class='date'>"+results[t]['dt']+"</p>");
 
-	$(results_view).append(temp);
-	//$(temp).fadeIn();
+	this.freshResults.push(temp);
     }
-    $(this.view).prepend(results_view);
-    $(results_view).fadeIn();
 
-    
+    if(this.firstNotify)  {
+	$("#message_view").hide();
+	this.refresh();
+	this.firstNotify = false;
+    }
+    else  {
+	$("#message_view").html("<span class='refresh_count'>"+this.freshResults.length+"</span> fresher results available! Click <a class='refresh_link' href='#' onclick='lc.refresh();'>here</a> to refresh!");
+	$("#message_view").slideDown();
+    }
 }
