@@ -37,7 +37,7 @@ spotter.modules.twitter.search = function(options)  {
 	return url;
     }
 
-    var callback = function(rawData)  {
+    var process = function(rawData)  {
 	var processedData = {};
 	refreshURL = rawData.refresh_url;
 	processedData.update = (rawData.results.length>0)?true:false;
@@ -45,8 +45,7 @@ spotter.modules.twitter.search = function(options)  {
 	return processedData;;
     }
 
-    return {url:url, callback:callback};
-
+    return {url:url, process:process};
 };
 
 
@@ -67,11 +66,12 @@ spotter.modules.twitter.trends = function(options)  {
 	return url;
     }
 
-    var callback = function(rawData)  {
+    var process = function(rawData)  {
 	var processedData = {};
 	var trends = rawData.trends;
-	if(lastTrends == null)
+	if(lastTrends === null)  {
 	    processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
+	}
 	else  {
 	    var tempArray = spotter.util.complements(rawData.trends, lastTrends);
 	    processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
@@ -81,5 +81,5 @@ spotter.modules.twitter.trends = function(options)  {
 	return processedData;
     }
 
-    return {url:url, callback:callback};    
+    return {url:url, process:process};    
 }

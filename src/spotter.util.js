@@ -3,7 +3,7 @@ if(!spotter)
 
 if(!spotter.util) spotter.util = {};
 else if(typeof spotter.util != "object")
-    throw new Error("spotter.modules is not an object!");
+    throw new Error("spotter.util is not an object!");
 
 /**
  * Returns an array of integers that represent
@@ -63,9 +63,13 @@ spotter.util.complements = function(a, b)  {
     return [aMinusB,bMinusA];
 }
 
+
+/**
+ * This is not currently working and should not be used anywhere
+ */
 spotter.util.equals = function(objA, objB)  {
     var result = true;
-    if(typeof objA != typeof objB || objA.length != objB.length)
+    if(typeof objA !== typeof objB || objA.length !== objB.length)
 	result = false;
     else if(objA instanceof Object && objB instanceof Object)  {
 	for(var i in objA)  {

@@ -22,7 +22,7 @@ TrendController.prototype.notify = function(trends)  {
     this.spotter = Spotter.spotterFactory("twitter.search",{searchString:trend});
     var lc = new ListController($('#list_view'));
     this.spotter.registerObserver(lc);
-    this.spotter.spot(15);
+    this.spotter.spot(30);
 }
 
 

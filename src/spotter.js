@@ -26,17 +26,19 @@ spotter.spotterFactory = function(m, options) {
      * @constructor
      * @param {String} v the name of the variable associated with this Spotter object
      */
-    function _spotter(v)  {
+
+    var _spotter = function(v)  {
 	var varName = v;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
 	var observers = new Array();
 	var intervalTimer = null;
 
-	var module = eval("spotter.modules."+m+";")(options);	/* may not be the best way to do this */
 
-	if(module == undefined)
-	    throw new Error("Module " + m + " not found!");
+	//this is not the best way to do this
+	var module = eval("spotter.modules."+m+";")(options);
+
+	if(module === undefined) throw new Error("Module " + m + " not found!");
 
 	/**
 	 * spot
@@ -82,7 +84,7 @@ spotter.spotterFactory = function(m, options) {
 	 * @param {Object} result from the API
 	 */
 	this.callback  = function(rawData)  {
-	    var processedData = module.callback(rawData); //send the raw data to the module for processing
+	    var processedData = module.process(rawData); //send the raw data to the module for processing
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) this.notifyObservers(processedData.data);
 	    lastCallReturned = true;
@@ -97,8 +99,9 @@ spotter.spotterFactory = function(m, options) {
 	 * @throws Error if you try to stop a stopped spotter
 	 */
 	this.stop = function()  {
-	    if(intervalTimer == null)
+	    if(intervalTimer == null)  {
 		throw new Error("You can't stop a stopped spotter!");
+	    }
 	    else  {
 		var head = document.getElementsByTagName("head");
 		if(lastScriptTag != null) head[0].removeChild(lastScriptTag);

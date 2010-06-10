@@ -30,7 +30,7 @@ spotter.modules.flickr.search = function(options)  {
 	return {url:url, callbackParam:"jsoncallback"};
     }
 
-    var callback = function(rawData)  {
+    var process = function(rawData)  {
 	var processedData = {};
 	var photos = rawData.photos.photo;
 	for(i in photos)  {
@@ -48,5 +48,5 @@ spotter.modules.flickr.search = function(options)  {
 	return u;
     }
 
-    return {url:url, callback:callback};
+    return {url:url, process:process};
 }
