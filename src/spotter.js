@@ -4,8 +4,6 @@
  *
  * @version .1
  *
- * TODO: get rid of eval if possible
- * TODO: make sure spotter object reference is in spotter's namespace
  * TODO: modify it so that the modules can better handle timing (big change)
  * TODO: generate documentation
  * TODO: create a definite namespace for this library
@@ -80,10 +78,10 @@ spotter.spotterFactory = function(m, options) {
 	    if((!seconds || seconds < 1) && lastCallReturned)  {
 		url = module.url();
 		if(url instanceof Object && url.callbackParam !== undefined)  {
-		    url = url.url+'&'+url.callbackParam+'='+varName+'.callback';
+		    url = url.url+'&'+url.callbackParam+'=spotter.'+varName+'.callback';
 		}
 		else  {
-		    url += '&callback='+varName+'.callback';
+		    url += '&callback=spotter.'+varName+'.callback';
 		}
 		url += '&random='+Math.floor(Math.random()*10000);
 		request(url);
@@ -178,7 +176,7 @@ spotter.spotterFactory = function(m, options) {
     }//end spotter constructor
 
     this.instanceCount = Spotter.instanceCount == null?1:Spotter.instanceCount++;
-    var variableName = "__SPOTTER_OBJECT_"+Spotter.instanceCount+Math.floor(Math.random()*100);
-    window[variableName] = new _spotter(variableName);
-    return window[variableName];
+    var variableName = "so"+Spotter.instanceCount+Math.floor(Math.random()*100);
+    window["spotter"][variableName] = new _spotter(variableName);
+    return window["spotter"][variableName];
 }
