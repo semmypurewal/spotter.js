@@ -46,11 +46,11 @@ spotter.spotterFactory = function(m, options) {
 	    modFunc =  window["spotter"]["modules"][m.split(".")[0]][m.split(".")[1]];
 	    if(modFunc === undefined) throw new Exception();
 	} catch(Exception)  {
-	    throw new Error("Module " + m + " not found! (Did you remember to include it via a script tag?)");
+	    throw new Error("Spotter: Module " + m + " not found! (Did you remember to include it via a script tag?)");
 	}
 	module = modFunc(options);  //yay no eval!
 	if(!module.url || !module.process)  {
-	    throw new Error("spotter.modules."+m+" is invalid.  (Does it return an object with url and process methods?)");
+	    throw new Error("Spotter: spotter.modules."+m+" is invalid.  (Does it return an object with url and process methods?)");
 	}
 
 
@@ -72,14 +72,19 @@ spotter.spotterFactory = function(m, options) {
 	 *
 	 * TODO: get rid of the number of seconds between requests, let that be
 	 *       handled by the appropriate module
+	 *
 	 */
 	this.spot = function(seconds)  {
+	    var url;
+
 	    if((!seconds || seconds < 1) && lastCallReturned)  {
-		var url = module.url();
-		if(url instanceof Object && url.callbackParam != undefined)
+		url = module.url();
+		if(url instanceof Object && url.callbackParam !== undefined)  {
 		    url = url.url+'&'+url.callbackParam+'='+varName+'.callback';
-		else
+		}
+		else  {
 		    url += '&callback='+varName+'.callback';
+		}
 		url += '&random='+Math.floor(Math.random()*10000);
 		request(url);
 	    }
@@ -117,7 +122,7 @@ spotter.spotterFactory = function(m, options) {
 	 */
 	this.stop = function()  {
 	    if(intervalTimer == null)  {
-		throw new Error("You can't stop a stopped spotter!");
+		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
 	    else  {
 		var head = document.getElementsByTagName("head");
@@ -147,7 +152,7 @@ spotter.spotterFactory = function(m, options) {
 	/********** OBSERVABLE INTERFACE ***************/
 
 	/**
-	 * Register an observer with this twitter watcher
+	 * Register an observer with this Spotter
 	 *
 	 * @member Spotter
 	 * @param {Object} observer this method verifies that the notify method is present
@@ -161,7 +166,7 @@ spotter.spotterFactory = function(m, options) {
 	}
 
 	/**
-	 * Notify this observable's observers
+	 * Notify this Spotter's observers
 	 *
 	 * @param {Object} data that will be sent to the observers
 	 */
@@ -173,7 +178,7 @@ spotter.spotterFactory = function(m, options) {
     }//end spotter constructor
 
     this.instanceCount = Spotter.instanceCount == null?1:Spotter.instanceCount++;
-    var variable_name = "__SPOTTER_OBJECT_"+Spotter.instanceCount+Math.floor(Math.random()*100);
-    var script = variable_name + " = new _spotter(\"" + variable_name + "\");";
-    return eval(script);
+    var variableName = "__SPOTTER_OBJECT_"+Spotter.instanceCount+Math.floor(Math.random()*100);
+    window[variableName] = new _spotter(variableName);
+    return window[variableName];
 }
