@@ -1,0 +1,97 @@
+<!--
+Spotter Example
+Copyright (C) 2010 Semmy Purewal
+-->
+
+<html>
+ <head>
+  <script src="javascripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+  <script src="../../src/spotter.js" type="text/javascript"></script>
+  <script src="../../src/spotter.util.js" type="text/javascript"></script>
+  <script src="../../src/spotter.twitpic.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+
+function init()  {
+  var timer = null;
+
+  //create your observing object
+  var observerObject = {};
+
+  function slideshow(photos)  {
+     $("#image").fadeOut(500, function()  {
+        $("#image").html("").append("<a class='image_link' target='_blank' href='"+photos[0].twitpic_url+"'><img src='"+photos[0].twitpic_full_url+"'/></a>").fadeIn(500);
+        $("#image").append("<div id='title'>\""+photos[0].text+"\" -- "+photos[0].from_user+"</div>");
+        $("#hidden").html("").append("<img src='"+photos[1].twitpic_full_url+"'/>");  //preload the next image
+        photos.push(photos.shift());
+        timer = setTimeout(function() { slideshow(photos); }, 6000);
+     });
+  }
+
+  //set up your notify function
+  observerObject.notify = function(photos)  {
+      $("#hidden").html("").append("<img src='"+photos[0].twitpic_full_url+"'/>");  //preload the first image
+      slideshow(photos);
+  }
+
+  //create your spotter
+  var spotter = Spotter.spotterFactory("twitpic.search", {searchString:"#chs"});
+
+  //register your observer
+  spotter.registerObserver(observerObject);
+
+  spotter.spot(); 
+}
+  </script>
+
+  <style>
+
+body {
+  width: 800px;
+  margin:auto;
+}
+
+#container  {
+  width: 100%;
+  text-align: center;
+  margin-top: 3em;
+}
+
+#hidden  {
+  display: none;
+}
+
+img  {
+  border: 0;
+}
+
+#title  {
+  margin-top: 1em;
+  font-family: arial, sans-serif;
+  color: #aaa;
+  font-weight: bold;
+}
+
+a {
+  font-family: arial, sans-serif;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+  </style>
+
+ </head>
+
+ <body onload="init();">
+  <a href="../index.html">&lt;&lt; back to examples</a>
+  <div id="container">
+    <div id="hidden">
+    </div>
+
+    <div id="image">
+    
+    </div>
+  </div>
+
+ </body>
+</html>

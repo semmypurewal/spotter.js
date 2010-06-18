@@ -55,4 +55,53 @@ spotter.modules.delicious.recent = function(options)  {
 
     return {url:url, process:process};
     
+}//end recent module
+
+/**
+ * Required options: tags
+ * Other available options: ?
+ * callback return format: {update, data}
+ * update: true/false depending on whether there are new bookmarks
+ * data: the bookmark objects themselves
+ */
+spotter.modules.delicious.tags = function(options)  {
+    var tags = options.tags;
+
+    if(tags === undefined || tags === "")
+	throw new Error("delicious tags module requires tags to be specified as an option");	
+
+    var lastTop;
+
+    var url = function()  {
+	var url = 'http://feeds.delicious.com/v2/json/tag/'+tags+'?count=100';
+	return url;
+    }
+
+    var process = function(data)  {
+	var processedData = {};
+	if(lastTop === undefined)  {
+	    lastTop = data[0];
+	    processedData = {data:data, update:true};
+	}
+	else if(lastTop["u"] === data[0]["u"])  {
+	    processedData = {data:data, update:false};
+	}
+	else  {
+	    pops = data.length - find(lastTop, data);
+	    for(var i = 0; i < pops; i++) data.pop();
+	    processedData = {data:data, update:true};
+	    lastTop = data[0];
+	}
+	return processedData;
+    }
+
+    var find = function (item, array)  {
+	for(var i = 0; i < array.length; ++i)  {
+	    if(array[i]["u"] === item["u"]) return i;
+	}
+	return array.length;
+    }
+
+    return {url:url, process:process};
+    
 }

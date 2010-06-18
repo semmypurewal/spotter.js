@@ -34,7 +34,6 @@ spotter.spotterFactory = function(m, options) {
 	var observers = new Array();
 	var intervalTimer = null;
 
-
 	//this is not the best way to do this
 	var module = eval("spotter.modules."+m+";")(options);
 

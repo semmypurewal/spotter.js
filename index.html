@@ -12,22 +12,22 @@ Copyright (C) 2010 Semmy Purewal
   <h2>Spotter</h2>
   <a href="index.html">home</a> <a href="examples">examples</a> <a href="src">download</a> <a href="doc">documentation</a>
 
-<p>Spotter is an observable client-side Twitter search library written in JavaScript for
-use in browser-based real-time JSON feed applications.</p>
+<p>Spotter is a client-side JavaScript library designed for browser-based real-time JSON applications and mashups.</p>
+<p>In a nutshell, it is an abstraction of push technologies like <a target="_blank" href="http://en.wikipedia.org/wiki/Comet_(programming)">Comet</a>, which typically require server-side programming.  The goal of Spotter is to allow client-side developers to create applications that respond to 'pushes' so that when APIs support a push protocol (or cross-site long polling) the back-end can be rewritten to exploit this technology, without the application developer needing to change anything!</p>
 
 
 <h3>Features</h3>
 <ul>
- <li>Current support for Twitter (search and trends), Flickr (search), and Delicious (recents)</li>
- <li>Completely client-side, no need to for clients to hit your server for updates</li>
- <li>Flexible enough for real-time applications needing results within 1 second to those needing results within 30 minutes or longer</li>
+ <li>Current support for Twitter (search and trends), Flickr (search), and Delicious (recents and tags)</li>
+ <li>Completely client-side</li>
+ <li>"Real-time" and flexible (although you should consult the Spotter documentation and the API documentation before changing the defaults)</li>
  <li>Extendible via a simple modular design</li>
  <li>OOP design allows you to easily integrate it into your OOP designs, but OOP is not necessary</li>
 </ul>
 
 <p>Spotter's interface is based on the Observer design pattern.  Observer objects (those that implement
 the notify function) register with a Spotter object and are only notified when the Spotter
-recieves new data.  You can also use Spotter to send requests at specified intervals in your
+receives new data.  You can also use Spotter to send requests at specified intervals in your
 code.</p>
 
 <p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this

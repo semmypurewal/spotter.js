@@ -28,7 +28,7 @@ spotter.modules.twitter.search = function(options)  {
     var refreshURL = "";
     var searchString = options.searchString;
 
-    if(searchString == undefined || searchString == "")
+    if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires searchString to be specified as an option");
 
     var url = function()  {
