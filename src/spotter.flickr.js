@@ -1,6 +1,9 @@
 /**
  * spotter.flickr.js
  * Copyright (C) 2010 Semmy Purewal
+ *
+ * TODO: make sure flickr is only returning fresh results
+ *
  */
 
 if(!spotter)
