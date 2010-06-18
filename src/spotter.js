@@ -3,6 +3,12 @@
  * Copyright (C) 2010 Semmy Purewal
  *
  * @version .1
+ *
+ * TODO: get rid of eval if possible
+ * TODO: make sure spotter object reference is in spotter's namespace
+ * TODO: modify it so that the modules can better handle timing (big change)
+ * TODO: generate documentation
+ * TODO: create a definite namespace for this library
  */
 
 spotter = {}
@@ -12,10 +18,10 @@ Spotter = spotter;
 /**
  * spotterFactory
  *
- * This is how you build spotter objects (you don't use a
- * constructor).  Note that the factory function keeps
- * track of the number of instances so that it can assign
- * each one a unique variable name.
+ * Creates a new Spotter object with the specified module and options.
+ *
+ * @param m string representing the module that this spotter will use
+ * @param options Object containing options that can be sent to that module
  */
 spotter.spotterFactory = function(m, options) {
 
@@ -26,18 +32,27 @@ spotter.spotterFactory = function(m, options) {
      * @constructor
      * @param {String} v the name of the variable associated with this Spotter object
      */
-
     var _spotter = function(v)  {
 	var varName = v;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
 	var observers = new Array();
 	var intervalTimer = null;
+	var modFunc;
+	var module;
 
-	//this is not the best way to do this
-	var module = eval("spotter.modules."+m+";")(options);
 
-	if(module === undefined) throw new Error("Module " + m + " not found!");
+	try  {
+	    modFunc =  window["spotter"]["modules"][m.split(".")[0]][m.split(".")[1]];
+	    if(modFunc === undefined) throw new Exception();
+	} catch(Exception)  {
+	    throw new Error("Module " + m + " not found! (Did you remember to include it via a script tag?)");
+	}
+	module = modFunc(options);  //yay no eval!
+	if(!module.url || !module.process)  {
+	    throw new Error("spotter.modules."+m+" is invalid.  (Does it return an object with url and process methods?)");
+	}
+
 
 	/**
 	 * spot
@@ -55,6 +70,8 @@ spotter.spotterFactory = function(m, options) {
 	 * TODO: set up a time out so that if the last request doesn't return 
 	 *       the remaining requests are not blocked
 	 *
+	 * TODO: get rid of the number of seconds between requests, let that be
+	 *       handled by the appropriate module
 	 */
 	this.spot = function(seconds)  {
 	    if((!seconds || seconds < 1) && lastCallReturned)  {
@@ -79,6 +96,7 @@ spotter.spotterFactory = function(m, options) {
 	 * Receive the response from the ajax request and send it
 	 * to the appropriate module for processing.  Removes the
 	 * defunct script tag from the DOM
+	 *
 	 * @member Spotter
 	 * @param {Object} result from the API
 	 */
@@ -136,7 +154,7 @@ spotter.spotterFactory = function(m, options) {
 	 * @throws TypeError a TypeError is thrown if the parameter does not implement notify
 	 */
 	this.registerObserver = function(observer) {
-	    if(observer.notify != undefined && typeof observer.notify == 'function')
+	    if(observer.notify !== undefined && typeof observer.notify === 'function')
 		observers.push(observer);
 	    else
 		throw new TypeError('Spotter: observer must implement a notify method.');
@@ -159,4 +177,3 @@ spotter.spotterFactory = function(m, options) {
     var script = variable_name + " = new _spotter(\"" + variable_name + "\");";
     return eval(script);
 }
-

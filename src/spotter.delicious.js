@@ -103,5 +103,4 @@ spotter.modules.delicious.tags = function(options)  {
     }
 
     return {url:url, process:process};
-    
 }
