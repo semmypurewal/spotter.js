@@ -25,7 +25,7 @@ Spotter = spotter;
  * @param m string representing the module that this spotter will use
  * @param options Object containing options that can be sent to that module
  */
-spotter.spotterFactory = function(m, options) {
+spotter.spotterFactory = function(m, o) {
 
     /**
      * private constructor
@@ -34,8 +34,8 @@ spotter.spotterFactory = function(m, options) {
      * @constructor
      * @param {String} v the name of the variable associated with this Spotter object
      */
-    var Spotter = function(v)  {
-	var varName = v;
+    var Spotter = function(type, options)  {
+	var varName =  "so"+Math.floor(Math.random()*100);
 	var lastCallReturned = true;
 	var lastScriptTag = null;
 	var observers = [];
@@ -46,14 +46,14 @@ spotter.spotterFactory = function(m, options) {
 	window["spotter"][varName] = this;
 
 	try  {
-	    modFunc =  window["spotter"]["modules"][m.split(".")[0]][m.split(".")[1]];
+	    modFunc =  window["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]];
 	    if(modFunc === undefined) throw new Exception();
 	} catch(e)  {
-	    throw new Error("Spotter: Module " + m + " not found! (Did you remember to include it via a script tag?)");
+	    throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
 	}
-	module = modFunc(options);  //yay no eval!
+	module = modFunc(options);
 	if(!module.url || !module.process)  {
-	    throw new Error("Spotter: spotter.modules."+m+" is invalid.  (Does it return an object with url and process methods?)");
+	    throw new Error("Spotter: spotter.modules."+type+" is invalid.  (Does it return an object with url and process methods?)");
 	}
 
 
@@ -181,9 +181,9 @@ spotter.spotterFactory = function(m, options) {
 	/********** END OBSERVABLE INTERFACE ***************/
     }//end spotter constructor
 
-    this.instanceCount = (this.instanceCount === undefined)?1:this.instanceCount+1;
-    var variableName = "so"+this.instanceCount+Math.floor(Math.random()*100);
+    //this.instanceCount = (this.instanceCount === undefined)?1:this.instanceCount+1;
+    //var variableName = "so"+this.instanceCount+Math.floor(Math.random()*100);
     //window["spotter"][variableName] = new Spotter(variableName);
     //return window["spotter"][variableName];
-    return new Spotter(variableName);
+    return new Spotter(m, o);
 }
