@@ -11,6 +11,10 @@
 
 spotter = {}
 
+/**
+ * Spotter is an object
+ * @class
+ */
 Spotter = spotter;
 
 /**
@@ -30,20 +34,21 @@ spotter.spotterFactory = function(m, options) {
      * @constructor
      * @param {String} v the name of the variable associated with this Spotter object
      */
-    var _spotter = function(v)  {
+    var Spotter = function(v)  {
 	var varName = v;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
-	var observers = new Array();
+	var observers = [];
 	var intervalTimer = null;
 	var modFunc;
 	var module;
 
+	window["spotter"][varName] = this;
 
 	try  {
 	    modFunc =  window["spotter"]["modules"][m.split(".")[0]][m.split(".")[1]];
 	    if(modFunc === undefined) throw new Exception();
-	} catch(Exception)  {
+	} catch(e)  {
 	    throw new Error("Spotter: Module " + m + " not found! (Did you remember to include it via a script tag?)");
 	}
 	module = modFunc(options);  //yay no eval!
@@ -166,6 +171,7 @@ spotter.spotterFactory = function(m, options) {
 	/**
 	 * Notify this Spotter's observers
 	 *
+	 * @member Spotter
 	 * @param {Object} data that will be sent to the observers
 	 */
 	this.notifyObservers = function(data)  {
@@ -175,8 +181,9 @@ spotter.spotterFactory = function(m, options) {
 	/********** END OBSERVABLE INTERFACE ***************/
     }//end spotter constructor
 
-    this.instanceCount = Spotter.instanceCount == null?1:Spotter.instanceCount++;
-    var variableName = "so"+Spotter.instanceCount+Math.floor(Math.random()*100);
-    window["spotter"][variableName] = new _spotter(variableName);
-    return window["spotter"][variableName];
+    this.instanceCount = (this.instanceCount === undefined)?1:this.instanceCount+1;
+    var variableName = "so"+this.instanceCount+Math.floor(Math.random()*100);
+    //window["spotter"][variableName] = new Spotter(variableName);
+    //return window["spotter"][variableName];
+    return new Spotter(variableName);
 }
