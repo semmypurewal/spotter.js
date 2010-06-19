@@ -5,7 +5,6 @@
  * @version .1
  *
  * TODO: modify it so that the modules can better handle timing (big change)
- * TODO: generate documentation
  * TODO: create a definite namespace for this library
  */
 
@@ -33,18 +32,16 @@ spotter.Spotter = function(type, options)  {
     var lastScriptTag = null;
     var observers = [];
     var intervalTimer = null;
-    var modFunc;
     var module;
 
     window["spotter"][varName] = this;
 
     try  {
-	modFunc =  window["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]];
-	if(modFunc === undefined) throw new Exception();
+	module = new (window["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
     } catch(e)  {
 	throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
     }
-    module = modFunc(options);
+
     if(!module.url || !module.process)  {
 	throw new Error("Spotter: spotter.modules."+type+" is invalid.  (Does it return an object with url and process methods?)");
     }
@@ -132,7 +129,7 @@ spotter.Spotter = function(type, options)  {
 	script.id = varName+'_'+'request';
 	script.type = 'text/javascript';
 	script.src = url;
-	if(lastScriptTag != null) head[0].removeChild(lastScriptTag);
+	if(lastScriptTag !== null) head[0].removeChild(lastScriptTag);
 	head[0].appendChild(script);
 	lastScriptTag = script;
     }

@@ -25,7 +25,7 @@ else if(typeof spotter.modules.identica != "object")
  * update: true/false depending on whether there are new tweets
  * data: the tweet objects themselves
  *
- * TODO: Once statusnet completely implements it's Twitter Compatible API
+ * TODO: Once statusnet completely implements its Twitter Compatible API
  *       this should work just like the twitter module.  It may be possible
  *       to merge the two modules somehow.
  */
@@ -38,13 +38,13 @@ spotter.modules.identica.search = function(options)  {
     if(searchString === undefined || searchString === "")
 	throw new Error("identica search module requires searchString to be specified as an option");
 
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://identi.ca/api/search.json';
 	url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
 	return url;
     }
 
-    var process = function(rawData)  {
+    this.process = function(rawData)  {
 	var processedData = {};
 	var i;
 
@@ -64,8 +64,6 @@ spotter.modules.identica.search = function(options)  {
 
 	return processedData;;
     }
-
-    return {url:url, process:process};
 };
 
 spotter.modules.identica.realtimesearch = function(options)  {
@@ -77,12 +75,12 @@ spotter.modules.identica.realtimesearch = function(options)  {
     if(searchString === undefined || searchString === "")
 	throw new Error("identica search module requires searchString to be specified as an option");
 
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://identi.ca/api/statuses/public_timeline.json?count='+currentCount;
 	return url;
     }
 
-    var process = function(rawData)  {
+    this.process = function(rawData)  {
 	var processedData = {};
 	var i;
 
@@ -108,6 +106,4 @@ spotter.modules.identica.realtimesearch = function(options)  {
 	}
 	return processedData;;
     }
-
-    return {url:url, process:process};
 }

@@ -42,13 +42,13 @@ spotter.modules.twitpic.search = function(options)  {
     if(searchString === undefined || searchString === "")
 	throw new Error("twitpic search module requires searchString to be specified as an option");
 
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'
 	url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
 	return url;
     }
 
-    var process = function(rawData)  {
+    this.process = function(rawData)  {
 	var processedData = {};
 	var i;
 	var rematch;
@@ -71,9 +71,6 @@ spotter.modules.twitpic.search = function(options)  {
 		processedData.data.push(rawData.results[i]);
 	    }
 	}
-
-	return processedData;;
+	return processedData;
     }
-
-    return {url:url, process:process};
 };

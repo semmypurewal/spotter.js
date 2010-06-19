@@ -23,12 +23,12 @@ else if(typeof spotter.modules.delicious != "object")
 
 spotter.modules.delicious.recent = function(options)  {
     var lastTop;
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
 	return url;
     }
 
-    var process = function(data)  {
+    this.process = function(data)  {
 	var processedData = {};
 	if(lastTop === undefined)  {
 	    lastTop = data[0];
@@ -52,9 +52,6 @@ spotter.modules.delicious.recent = function(options)  {
 	}
 	return array.length;
     }
-
-    return {url:url, process:process};
-    
 }//end recent module
 
 /**
@@ -72,12 +69,12 @@ spotter.modules.delicious.tags = function(options)  {
 
     var lastTop;
 
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://feeds.delicious.com/v2/json/tag/'+tags+'?count=100';
 	return url;
     }
 
-    var process = function(data)  {
+    this.process = function(data)  {
 	var processedData = {};
 	if(lastTop === undefined)  {
 	    lastTop = data[0];
@@ -102,5 +99,4 @@ spotter.modules.delicious.tags = function(options)  {
 	return array.length;
     }
 
-    return {url:url, process:process};
 }

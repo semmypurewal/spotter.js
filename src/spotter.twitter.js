@@ -34,21 +34,19 @@ spotter.modules.twitter.search = function(options)  {
     if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires searchString to be specified as an option");
 
-    var url = function()  {
+    this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'
 	url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
 	return url;
     }
 
-    var process = function(rawData)  {
+    this.process = function(rawData)  {
 	var processedData = {};
 	refreshURL = rawData.refresh_url;
 	processedData.update = (rawData.results.length>0)?true:false;
 	processedData.data = rawData.results;
 	return processedData;;
     }
-
-    return {url:url, process:process};
 };
 
 
@@ -63,13 +61,13 @@ spotter.modules.twitter.search = function(options)  {
 spotter.modules.twitter.trends = function(options)  {
     var lastTrends;
 
-    var url = function()  {
+    this.url = function()  {
 	var url = "http://search.twitter.com/trends.json?";
 	if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
 	return url;
     }
 
-    var process = function(rawData)  {
+    this.process = function(rawData)  {
 	var processedData = {};
 	var trends = rawData.trends;
 	if(lastTrends === null)  {
@@ -83,6 +81,4 @@ spotter.modules.twitter.trends = function(options)  {
 	processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
 	return processedData;
     }
-
-    return {url:url, process:process};    
 }
