@@ -22,13 +22,13 @@ function init()  {
   }
 
   //create your spotter
-  var spotter = Spotter.spotterFactory("twitter.search", {searchString:"Justin Bieber"});
+  var s = new spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
 
   //register your observer
-  spotter.registerObserver(observerObject);
+  s.registerObserver(observerObject);
 
   //start BieberSpotting!
-  spotter.spot(10); 
+  s.spot(10); 
 }
 
   </script>

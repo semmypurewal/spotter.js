@@ -33,13 +33,13 @@ function init()  {
   }
 
   //create your spotter
-  var spotter = Spotter.spotterFactory("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga"});
+  //var spotter = Spotter.spotterFactory("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga"});
+  var s = new spotter.Spotter("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga"});
 
   //register your observer
-  spotter.registerObserver(observerObject);
+  s.registerObserver(observerObject);
 
-  //look for new Justin Bieber results every 10 seconds
-  spotter.spot(); 
+  s.spot(); 
 }
   </script>
 

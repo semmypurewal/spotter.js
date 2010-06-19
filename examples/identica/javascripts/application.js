@@ -4,7 +4,7 @@
  */
 
 function init()  {
-    var trendSpotter = Spotter.spotterFactory("twitter.trends", {exclude:"hashtags"});
+    var trendSpotter = new spotter.Spotter("twitter.trends", {exclude:"hashtags"});
     var tc = new TrendController($("#trend_view"));
     trendSpotter.registerObserver(tc);
     trendSpotter.spot(60);
@@ -20,7 +20,7 @@ TrendController.prototype.notify = function(trends)  {
     var trend = "linux|GNU|apple|mac";
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = Spotter.spotterFactory("identica.realtimesearch",{searchString:trend});
+    this.spotter = new spotter.Spotter("identica.realtimesearch",{searchString:trend});
     var lc = new ListController($('#list_view'));
     this.spotter.registerObserver(lc);
     this.spotter.spot(30);

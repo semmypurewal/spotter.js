@@ -35,12 +35,14 @@ function init()  {
   }
 
   //create your spotter
-  var spotter = Spotter.spotterFactory("twitpic.search", {searchString:"#chs"});
+  //var spotter = Spotter.spotterFactory("twitpic.search", {searchString:"#chs"});
+  var s = new spotter.Spotter("twitpic.search", {searchString:"#chs"});
+
 
   //register your observer
-  spotter.registerObserver(observerObject);
+  s.registerObserver(observerObject);
 
-  spotter.spot(); 
+  s.spot(); 
 }
   </script>
 

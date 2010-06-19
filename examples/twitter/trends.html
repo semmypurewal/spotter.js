@@ -20,7 +20,7 @@ function init()  {
   var observerObject = new Object();
 
   //create your spotter
-  var spotter = Spotter.spotterFactory("twitter.trends",{exclude:"hashtags"});
+  var s = new spotter.Spotter("twitter.trends",{exclude:"hashtags"});
 
   observerObject.notify = function(trends) {
     var newTrends = trends.added;
@@ -41,10 +41,10 @@ function init()  {
 
   //now that the notify method is implemented,
   //register your spotter
-  spotter.registerObserver(observerObject);
+  s.registerObserver(observerObject);
 
   //look for new trends every 30 seconds
-  spotter.spot(30);
+  s.spot(30);
 }
 
 /**
