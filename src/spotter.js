@@ -9,6 +9,11 @@
  * TODO: create a definite namespace for this library
  */
 
+
+/**
+ * @namespace
+ * The namespace of this library.
+ */
 spotter = {};
 
 /**
@@ -17,12 +22,13 @@ spotter = {};
  * options.
  *
  * @constructor
- * @param {String} the type the module type associated witht this spotter, e.g. "twitter.search"
- * @param {Object} a hash of options for the appropriate module, e.g. {searchString: "Justing Beiber"}
+ * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
+ * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justing Beiber"}
  * @throws {Error} An error is thrown if there is a problem loading the module
  */
 spotter.Spotter = function(type, options)  {
-    var varName =  "so"+Math.floor(Math.random()*100);
+    this.instanceCount = this.instanceCount+1;
+    var varName =  "so"+this.instanceCount+""+Math.floor(Math.random()*100);
     var lastCallReturned = true;
     var lastScriptTag = null;
     var observers = [];
@@ -45,12 +51,9 @@ spotter.Spotter = function(type, options)  {
 
 
     /**
-     * spot
-     *
      * Begin spotting.
      *
-     * @member Spotter
-     * @param {Number} optional parameter represeting the number of seconds
+     * @param {Number} seconds optional parameter represeting the number of seconds
      *        between each request.  If this parameter is not provided, the
      *        function performs a single request.
      *
@@ -72,45 +75,42 @@ spotter.Spotter = function(type, options)  {
 	    else  {
 		url += '&callback=spotter.'+varName+'.callback';
 	    }
-	    url += '&random='+Math.floor(Math.random()*10000);
+	    url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 	    request(url);
 	}
 	else  {
 	    this.spot();
 	    var obj = this;
-	    intervalTimer = setInterval(function() { obj.spot(); }, seconds*1000);		
+	    intervalTimer = setInterval(function() { obj.spot(); }, seconds*1000);
 	}
     }
     
     /**
-     * callback
-     *
      * Receives the response from the ajax request and send it
      * to the appropriate module for processing.  Removes the
      * defunct script tag from the DOM.  Notifies observers if
      * the module determines there is new data.
      *
-     * @member Spotter
-     * @param {Object} raw (unprocessed) data from the API
+     * @param {Object} rawData Unprocessed data direct from the API
      */
     this.callback  = function(rawData)  {
 	var processedData = module.process(rawData); //send the raw data to the module for processing
 	//now the processedData has an 'update' attribute and a 'data' attribute
 	if(processedData.update) this.notifyObservers(processedData.data);
+
+	//here is where we need to set up the next call by getting the delay from the module
+
 	lastCallReturned = true;
     }
 
 
     /**
-     * stop
-     *
      * Stops this spotter if it is currently spotting.
      *
-     * @member Spotter
      * @throws Error An error is thrown if you try to stop a stopped spotter
      */
     this.stop = function()  {
-	if(intervalTimer == null)  {
+	if(intervalTimer === null)  {
 	    throw new Error("Spotter: You can't stop a stopped spotter!");
 	}
 	else  {
@@ -129,7 +129,7 @@ spotter.Spotter = function(type, options)  {
     var request = function(url)  {
 	var head = document.getElementsByTagName("head");
 	var script = document.createElement('script');
-	script.id = 'spotter_request'+varName;
+	script.id = varName+'_'+'request';
 	script.type = 'text/javascript';
 	script.src = url;
 	if(lastScriptTag != null) head[0].removeChild(lastScriptTag);
@@ -139,9 +139,8 @@ spotter.Spotter = function(type, options)  {
     
     /********** OBSERVABLE MIXIN ***************/
     /**
-     * Register an observer with this Spotter
+     * Register an observer with this object
      *
-     * @member Spotter
      * @param {Object} observer this method verifies that the notify method is present
      * @throws TypeError a TypeError is thrown if the parameter does not implement notify
      */
@@ -153,9 +152,8 @@ spotter.Spotter = function(type, options)  {
     }
     
     /**
-     * Notify this Spotter's observers
+     * Notify this Observable's observers
      *
-     * @member Spotter
      * @param {Object} data that will be sent to the observers
      */
     spotter.Spotter.prototype.notifyObservers = function(data)  {
@@ -164,3 +162,5 @@ spotter.Spotter = function(type, options)  {
     }
     /********** END OBSERVABLE MIXIN ***************/
 }//end spotter constructor
+
+spotter.Spotter.prototype.instanceCount = 0;

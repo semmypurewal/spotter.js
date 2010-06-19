@@ -36,20 +36,20 @@ is all that's necessary:</p>
 <pre><tt>//create your observing object
 var observerObject = new Object();
 
-//create your spotter
-var spotter = Spotter.spotterFactory("twitter.search",{searchString:"Justin Bieber"});
-
 //set up your notify function
 observerObject.notify = function(tweets)  {
   //if this is called, tweets will not be empty
   alert(tweets[0]['text']);
 }
 
+//create your spotter
+var s = new spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
+
 //register your observer
-spotter.registerObserver(observerObject);
+s.registerObserver(observerObject);
 
 //look for new Justin Bieber results every 10 seconds
-spotter.spot(10); </tt></pre>
+s.spot(10); </tt></pre>
 
 <p>That's all there is to it!</p>
 

@@ -25,7 +25,7 @@ else if(typeof spotter.modules.twitter != "object")
  * Other available options: ?
  * callback return format: {update, data}
  * update: true/false depending on whether there are new tweets
- * data: the tweet objects themselves
+ * data: the new tweet objects themselves
  */
 spotter.modules.twitter.search = function(options)  {
     var refreshURL = "";
