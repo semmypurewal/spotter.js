@@ -4,8 +4,7 @@
  *
  * @version .1
  *
- * TODO: modify it so that the modules can better handle timing (big change)
- * TODO: create a definite namespace for this library
+ * TODO: create a definite,permanant namespace for this library
  */
 
 
@@ -15,10 +14,14 @@
  */
 spotter = {};
 
+/************************************ SPOTTER ***********************************/
+
 /**
  * Construct a Spotter object of the specified type with the specified
  * options.  See the specific module documentation for available
- * options.
+ * options.<br/><br/>
+ *
+ * TODO: tease out the prototypes to save memory
  *
  * @constructor
  * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
@@ -26,12 +29,13 @@ spotter = {};
  * @throws {Error} An error is thrown if there is a problem loading the module
  */
 spotter.Spotter = function(type, options)  {
-    this.instanceCount = this.instanceCount+1;
-    var varName =  "so"+this.instanceCount+""+Math.floor(Math.random()*100);
+    spotter.Spotter.instanceCount = (spotter.Spotter.instanceCount === undefined)?1:spotter.Spotter.instanceCount+1;
+    var varName =  "so"+spotter.Spotter.instanceCount;
+    var spotting = false;
     var lastCallReturned = true;
     var lastScriptTag = null;
     var observers = [];
-    var intervalTimer = null;
+    var timer = null;
     var module;
 
     window["spotter"][varName] = this;
@@ -57,14 +61,14 @@ spotter.Spotter = function(type, options)  {
      * TODO: set up a time out so that if the last request doesn't return 
      *       the remaining requests are not blocked
      *
-     * TODO: get rid of the number of seconds between requests, let that be
-     *       handled by the appropriate module
      *
      */
-    this.spot = function(seconds)  {
+    this.spot = function()  {
+	if(!spotting) spotting = true;
 	var url;
-	
-	if((!seconds || seconds < 1) && lastCallReturned)  {
+	var obj = this;
+
+	if(lastCallReturned)  {
 	    url = module.url();
 	    if(url instanceof Object && url.callbackParam !== undefined)  {
 		url = url.url+'&'+url.callbackParam+'=spotter.'+varName+'.callback';
@@ -75,10 +79,8 @@ spotter.Spotter = function(type, options)  {
 	    url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 	    request(url);
 	}
-	else  {
-	    this.spot();
-	    var obj = this;
-	    intervalTimer = setInterval(function() { obj.spot(); }, seconds*1000);
+	if(module.nextTimeout() > 0)  {
+	    timer = setTimeout(function() { obj.spot(); }, module.nextTimeout()*1000);
 	}
     }
     
@@ -88,12 +90,13 @@ spotter.Spotter = function(type, options)  {
      * defunct script tag from the DOM.  Notifies observers if
      * the module determines there is new data.
      *
+     * @private 
      * @param {Object} rawData Unprocessed data direct from the API
      */
-    this.callback  = function(rawData)  {
+    this.callback = function(rawData)  {
 	var processedData = module.process(rawData); //send the raw data to the module for processing
 	//now the processedData has an 'update' attribute and a 'data' attribute
-	if(processedData.update) this.notifyObservers(processedData.data);
+	if(processedData.update) notifyObservers(processedData.data);
 
 	//here is where we need to set up the next call by getting the delay from the module
 
@@ -107,13 +110,14 @@ spotter.Spotter = function(type, options)  {
      * @throws Error An error is thrown if you try to stop a stopped spotter
      */
     this.stop = function()  {
-	if(intervalTimer === null)  {
+	if(!spotting)  {
 	    throw new Error("Spotter: You can't stop a stopped spotter!");
 	}
 	else  {
+	    spotting = false;
 	    var head = document.getElementsByTagName("head");
-	    if(lastScriptTag != null) head[0].removeChild(lastScriptTag);
-	    clearInterval(intervalTimer);
+	    if(lastScriptTag !== null) head[0].removeChild(lastScriptTag);
+	    clearTimeout(timer);
 	}
     }
 
@@ -138,10 +142,10 @@ spotter.Spotter = function(type, options)  {
     /**
      * Register an observer with this object
      *
-     * @param {Object} observer this method verifies that the notify method is present
+     * @param {Object} observer this object will be notified when new data is available
      * @throws TypeError a TypeError is thrown if the parameter does not implement notify
      */
-    spotter.Spotter.prototype.registerObserver = function(observer) {
+    this.register = function(observer) {
 	if(observer.notify !== undefined && typeof observer.notify === 'function')
 	    observers.push(observer);
 	else
@@ -151,13 +155,111 @@ spotter.Spotter = function(type, options)  {
     /**
      * Notify this Observable's observers
      *
+     * @private
      * @param {Object} data that will be sent to the observers
      */
-    spotter.Spotter.prototype.notifyObservers = function(data)  {
+    var notifyObservers = function(data)  {
 	for(var i in observers)
 	    observers[i].notify(data);
     }
     /********** END OBSERVABLE MIXIN ***************/
 }//end spotter constructor
 
-spotter.Spotter.prototype.instanceCount = 0;
+/************************************ END SPOTTER ***********************************/
+
+/************************************ MODULES ***********************************/
+
+/**
+ * @namespace
+ * The module namespace
+ */
+spotter.modules = {};
+
+/**
+ * @constructor
+ * The general Module from which everything else inherits
+ *
+ */
+spotter.modules.Module = function(options) {
+    if(options["frequency"] === undefined)  {
+	frequency = 45;
+    }
+    else  {
+	frequency = options["frequency"];
+    }
+
+    this.nextTimeout = function()  {
+	return frequency;
+    }
+}
+
+/************************************ END MODULES ***********************************/
+
+/************************************ UTILS ***********************************/
+
+/**
+ * @namespace
+ * The util namespace
+ */
+spotter.util = {};
+
+
+/**
+ * Returns an array of integers that represent
+ * the indices of the elements of b in the elements
+ * of a.  Currently assumes these are trend objects.
+ * Also assumes that all elements in a and b are uniq
+ * (i.e. they are sets)
+ *
+ * For example
+ *
+ * a:      ["a","b","c","d"]
+ * b:      ["c","b","d","f"]
+ * result: [-1 , 1 , 0 , 2 ]  
+ *
+ * @param {Array} An array of length n
+ * @param {Array} An array of length n
+ *
+ * TODO: make this more general
+ * TODO: make this private
+ */
+spotter.util.changes = function(a,b)  {
+    /*a = [{'name':'a'},{'name':'b'},{'name':'c'},{'name':'d'}];
+      b = [{'name':'c'},{'name':'b'},{'name':'d'},{'name':'f'}];*/
+    
+    var result = new Array();
+    var indices = new Object();
+    for(var i in b)
+	indices[b[i]]==undefined?indices[b[i]['name']]=parseInt(i):null;
+    for(var i in a)
+	result[i] = indices[a[i]['name']]==undefined?-1:indices[a[i]['name']];
+    return result;
+}
+
+/**
+ * returns an array of arrays.  the first
+ * are the elements in a that are not in b
+ * and the second are the elements in b that
+ * are not in a.
+ *
+ * For now this assumes a trends object
+ *
+ * TODO: make private
+ * TODO: make more general (for arbitrary arrays)
+ * TODO: use the changes algorithm as a subroutine
+ *
+ */
+spotter.util.complements = function(a, b)  {
+    var counts = new Object();
+    var aMinusB = new Array();
+    var bMinusA = new Array();
+    for(var i in a)
+	counts[a[i]]==undefined?counts[a[i]['name']]=i:null;
+    for(var j in b)
+	counts[b[j]['name']]==null?bMinusA.push(b[j]):counts[b[j]['name']]=-1;
+    for(var k in counts)
+	counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+    return [aMinusB,bMinusA];
+}
+
+/************************************ END UTILS ***********************************/

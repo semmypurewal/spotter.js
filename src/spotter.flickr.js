@@ -18,6 +18,8 @@ else if(typeof spotter.modules.flickr != "object")
     throw new Error("spotter.modules.flickr is not an object!");
 
 spotter.modules.flickr.search = function(options)  {
+    spotter.modules.Module.call(this,options);    
+
     if(options == undefined || options.api_key == undefined || (options.searchString == undefined && options.tags == undefined))
 	throw new Error("flickr module requires an api_key and a searchString or tags to be defined as an option");
 

@@ -4,11 +4,10 @@
  */
 
 function init()  {
-    //var trendSpotter = Spotter.spotterFactory("twitter.trends", {exclude:"hashtags"});
-    var trendSpotter = new spotter.Spotter("twitter.trends", {exclude:"hashtags"});
+    var trendSpotter = new spotter.Spotter("twitter.trends", {exclude:"hashtags", frequency:60});
     var tc = new TrendController($("#trend_view"));
-    trendSpotter.registerObserver(tc);
-    trendSpotter.spot(60);
+    trendSpotter.register(tc);
+    trendSpotter.spot();
 }
 
 function TrendController(view)  {
@@ -20,10 +19,10 @@ TrendController.prototype.notify = function(trends)  {
     var trend = trends.added[trends.added.length-1].name;
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = new spotter.Spotter("twitter.search",{searchString:trend});
+    this.spotter = new spotter.Spotter("twitter.search",{searchString:trend, frequency:30});
     var lc = new ListController($('#list_view'));
-    this.spotter.registerObserver(lc);
-    this.spotter.spot(30);
+    this.spotter.register(lc);
+    this.spotter.spot();
 }
 
 

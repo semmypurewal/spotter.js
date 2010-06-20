@@ -4,10 +4,10 @@
  */
 
 function init()  {
-    var trendSpotter = new spotter.Spotter("twitter.trends", {exclude:"hashtags"});
+    var trendSpotter = new spotter.Spotter("twitter.trends", {exclude:"hashtags",frequency:60});
     var tc = new TrendController($("#trend_view"));
-    trendSpotter.registerObserver(tc);
-    trendSpotter.spot(60);
+    trendSpotter.register(tc);
+    trendSpotter.spot();
 }
 
 function TrendController(view)  {
@@ -22,8 +22,8 @@ TrendController.prototype.notify = function(trends)  {
     if(this.spotter != null) this.spotter.stop();
     this.spotter = new spotter.Spotter("identica.realtimesearch",{searchString:trend});
     var lc = new ListController($('#list_view'));
-    this.spotter.registerObserver(lc);
-    this.spotter.spot(30);
+    this.spotter.register(lc);
+    this.spotter.spot();
 }
 
 

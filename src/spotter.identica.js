@@ -30,6 +30,8 @@ else if(typeof spotter.modules.identica != "object")
  *       to merge the two modules somehow.
  */
 spotter.modules.identica.search = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var refreshURL = "";
     var searchString = options.searchString;
 
@@ -67,6 +69,8 @@ spotter.modules.identica.search = function(options)  {
 };
 
 spotter.modules.identica.realtimesearch = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var searchString = options.searchString;
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented
     var currentCount=1000;

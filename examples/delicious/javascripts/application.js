@@ -4,11 +4,10 @@
  */
 
 function init()  {
-    //var spotter = Spotter.spotterFactory("delicious.tags", {tags:"zelda"});
-    var s = new spotter.Spotter("delicious.tags", {tags:"zelda"});
+    var s = new spotter.Spotter("delicious.recent", {tags:"zelda",frequency:30});
     lc = new ListController($('#results_list'));
-    s.registerObserver(lc);
-    s.spot(120);
+    s.register(lc);
+    s.spot();
 }
 
 function ListController(view)  {

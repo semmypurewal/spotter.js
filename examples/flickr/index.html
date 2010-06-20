@@ -33,11 +33,10 @@ function init()  {
   }
 
   //create your spotter
-  //var spotter = Spotter.spotterFactory("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga"});
-  var s = new spotter.Spotter("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga"});
+  var s = new spotter.Spotter("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga",frequency:0});
 
   //register your observer
-  s.registerObserver(observerObject);
+  s.register(observerObject);
 
   s.spot(); 
 }

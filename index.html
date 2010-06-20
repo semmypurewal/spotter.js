@@ -46,10 +46,10 @@ observerObject.notify = function(tweets)  {
 var s = new spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
 
 //register your observer
-s.registerObserver(observerObject);
+s.register(observerObject);
 
-//look for new Justin Bieber results every 10 seconds
-s.spot(10); </tt></pre>
+//start BieberSpotting!
+s.spot(); </tt></pre>
 
 <p>That's all there is to it!</p>
 

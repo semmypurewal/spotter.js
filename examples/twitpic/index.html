@@ -7,7 +7,6 @@ Copyright (C) 2010 Semmy Purewal
  <head>
   <script src="javascripts/jquery-1.4.2.min.js" type="text/javascript"></script>
   <script src="../../src/spotter.js" type="text/javascript"></script>
-  <script src="../../src/spotter.util.js" type="text/javascript"></script>
   <script src="../../src/spotter.twitpic.js" type="text/javascript"></script>
 
   <script type="text/javascript">
@@ -35,12 +34,10 @@ function init()  {
   }
 
   //create your spotter
-  //var spotter = Spotter.spotterFactory("twitpic.search", {searchString:"#chs"});
-  var s = new spotter.Spotter("twitpic.search", {searchString:"#chs"});
-
+  var s = new spotter.Spotter("twitpic.search", {searchString:"#chs", frequency:0});
 
   //register your observer
-  s.registerObserver(observerObject);
+  s.register(observerObject);
 
   s.spot(); 
 }

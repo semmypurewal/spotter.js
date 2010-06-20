@@ -28,15 +28,19 @@ else if(typeof spotter.modules.twitter != "object")
  * data: the new tweet objects themselves
  */
 spotter.modules.twitter.search = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var refreshURL = "";
     var searchString = options.searchString;
 
     if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires searchString to be specified as an option");
+    
+    if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
 
     this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'
-	url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
+	url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	return url;
     }
 
@@ -47,6 +51,7 @@ spotter.modules.twitter.search = function(options)  {
 	processedData.data = rawData.results;
 	return processedData;;
     }
+
 };
 
 
@@ -59,6 +64,8 @@ spotter.modules.twitter.search = function(options)  {
  * trends: all trends
  */
 spotter.modules.twitter.trends = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var lastTrends;
 
     this.url = function()  {

@@ -36,6 +36,8 @@ else if(typeof spotter.modules.twitpic != "object")
  * data: the tweet objects themselves
  */
 spotter.modules.twitpic.search = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var refreshURL = "";
     var searchString = options.searchString;
 

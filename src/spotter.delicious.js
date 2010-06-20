@@ -2,7 +2,6 @@
  * spotter.delicious.js
  * Copyright (C) 2010 Semmy Purewal
  *
- * TODO: implement tag feed, should be very easy
  * TODO: implement hotlist feed, should be very easy
  *
  */
@@ -17,11 +16,16 @@ if(!spotter.modules) spotter.modules = {};
 else if(typeof spotter.modules != "object")
     throw new Error("spotter.modules is not an object!");
 
-if(!spotter.modules.delicious) spotter.modules.delicious = {};
+
+if(!spotter.modules.delicious)
+    spotter.modules.delicious = {};
 else if(typeof spotter.modules.delicious != "object")
     throw new Error("spotter.modules.delicious is not an object!");
 
+
 spotter.modules.delicious.recent = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var lastTop;
     this.url = function()  {
 	var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
@@ -60,8 +64,12 @@ spotter.modules.delicious.recent = function(options)  {
  * callback return format: {update, data}
  * update: true/false depending on whether there are new bookmarks
  * data: the bookmark objects themselves
+ *
+ * @constructor
  */
 spotter.modules.delicious.tags = function(options)  {
+    spotter.modules.Module.call(this,options);
+
     var tags = options.tags;
 
     if(tags === undefined || tags === "")
@@ -74,6 +82,11 @@ spotter.modules.delicious.tags = function(options)  {
 	return url;
     }
 
+    /**
+     * process delicious data
+     *
+     * @param data This is the raw data from Spotter
+     */
     this.process = function(data)  {
 	var processedData = {};
 	if(lastTop === undefined)  {
