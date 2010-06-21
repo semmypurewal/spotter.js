@@ -16,7 +16,7 @@ function TrendController(view)  {
 }
 
 TrendController.prototype.notify = function(trends)  {
-    var trend = trends.added[trends.added.length-1].name;
+    var trend = trends.trends[trends.trends.length-1].name;
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
     this.spotter = new spotter.Spotter("twitter.search",{searchString:trend, frequency:30});
@@ -48,5 +48,3 @@ ListController.prototype.notify = function(tweets)  {
 	$(temp).fadeIn();
     }
 }
-
-

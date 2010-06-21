@@ -40,13 +40,10 @@ spotter.Spotter = function(type, options)  {
 
     window["spotter"][varName] = this;
 
-    if(!spotter.modules[type.split(".")[0]] || !spotter.modules[type.split(".")[0]][type.split(".")[1]])
-	throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
-
     try  {
 	module = new (window["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
     } catch(e)  {
-	throw new Error(e);
+	throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
     }
 
     if(!module.url || !module.process)  {
@@ -193,6 +190,190 @@ spotter.modules.Module = function(options) {
 
     this.nextTimeout = function()  {
 	return frequency;
+    }
+}
+
+/**
+ * @namespace
+ * The flickr namespace
+ */
+spotter.modules.flickr = {};
+spotter.modules.flickr.search = function(options)  {
+    spotter.modules.Module.call(this,options);    
+
+    if(options == undefined || options.api_key == undefined || (options.searchString == undefined && options.tags == undefined))
+	throw new Error("flickr module requires an api_key and a searchString or tags to be defined as an option");
+
+    var api_key = options.api_key;
+    var searchString = options.searchString;
+    var tags = options.tags;
+    
+    this.url = function()  {
+	var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
+	url += '&api_key='+api_key+'&format=json&content_type=1';
+	if(tags != undefined) url+= '&tags='+escape(tags);
+	if(searchString != undefined) url+= '&text='+escape(searchString);
+	return {url:url, callbackParam:"jsoncallback"};
+    }
+
+    this.process = function(rawData)  {
+	var processedData = {};
+	var photos = rawData.photos.photo;
+	for(i in photos)  {
+	    photos[i].url = buildPhotoURL(photos[i]);
+	    photos[i].user_url = "http://www.flickr.com/"+photos[i].owner;
+	}
+	processedData.update = (photos.length>0)?true:false;	
+	processedData.data = photos;
+	return processedData;
+    }
+
+    /** private method that builds a photo URL from a photo object **/
+    var buildPhotoURL = function(photo)  {
+	var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
+	return u;
+    }
+}
+
+
+/**
+ * @namespace
+ * The twitpic namespace
+ */
+spotter.modules.twitpic = {};
+/**
+ * Required options: searchString
+ * Other available options: ?
+ * callback return format: {update, data}
+ *
+ * There is no twitpic API, this is a modification of the 
+ * twitter search API
+ *
+ * In addition to the normal twitter API response each object
+ * includes the following:
+ *
+ * twitpic_url
+ * twitpic_thumbnail_url
+ * twitpic_mini_url
+ *
+ * update: true/false depending on whether there are new tweets
+ * data: the tweet objects themselves
+ */
+spotter.modules.twitpic.search = function(options)  {
+    spotter.modules.Module.call(this,options);
+
+    var refreshURL = "";
+    var searchString = options.searchString;
+
+    if(searchString === undefined || searchString === "")
+	throw new Error("twitpic search module requires searchString to be specified as an option");
+
+    this.url = function()  {
+	var url = 'http://search.twitter.com/search.json'
+	url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
+	return url;
+    }
+
+    this.process = function(rawData)  {
+	var processedData = {};
+	var i;
+	var rematch;
+	var twitpic_id;
+	refreshURL = rawData.refresh_url;
+	processedData.update = (rawData.results.length>0)?true:false;
+
+	//process rawData and put it in processedData
+	processedData.data = [];
+	for(i in rawData.results)  {
+	    //put the processed version of the raw data in the 
+	    //processed data array
+	    rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
+	    if(rematch!== null && !rawData.results[i].text.match(new RegExp("^RT")))  {  //ignore retweets
+		twitpic_id = rematch[1];
+		rawData.results[i].twitpic_url = "http://twitpic.com/"+twitpic_id;
+		rawData.results[i].twitpic_full_url = "http://twitpic.com/show/full/"+twitpic_id;
+		rawData.results[i].twitpic_thumb_url = "http://twitpic.com/show/thumb/"+twitpic_id;
+		rawData.results[i].twitpic_mini_url = "http://twitpic.com/show/mini/"+twitpic_id;
+		processedData.data.push(rawData.results[i]);
+	    }
+	}
+	return processedData;
+    }
+}
+
+/**
+ * @namespace
+ * The twitter namespace
+ */
+spotter.modules.twitter = {};
+
+/**
+ * Required options: searchString
+ * Other available options: ?
+ * callback return format: {update, data}
+ * update: true/false depending on whether there are new tweets
+ * data: the new tweet objects themselves
+ */
+spotter.modules.twitter.search = function(options)  {
+    spotter.modules.Module.call(this,options);
+
+    var refreshURL = "";
+    var searchString = options.searchString;
+
+    if(searchString === undefined || searchString === "")
+	throw new Error("twitter search module requires searchString to be specified as an option");
+    
+    if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
+
+    this.url = function()  {
+	var url = 'http://search.twitter.com/search.json'
+	url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
+	return url;
+    }
+
+    this.process = function(rawData)  {
+	var processedData = {};
+	refreshURL = rawData.refresh_url;
+	processedData.update = (rawData.results.length>0)?true:false;
+	processedData.data = rawData.results;
+	return processedData;;
+    }
+
+};
+
+
+/**
+ * Required options:
+ * Other available options: exclude:hashtags
+ * callback return format: {added,removed,trends}
+ * added: new trends since the last call
+ * removed: removed trends since the last call
+ * trends: all trends
+ */
+spotter.modules.twitter.trends = function(options)  {
+    spotter.modules.Module.call(this,options);
+
+    var lastTrends;
+
+    this.url = function()  {
+	var url = "http://search.twitter.com/trends.json?";
+	if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
+	return url;
+    }
+
+    this.process = function(rawData)  {
+	var processedData = {};
+	var trends = rawData.trends;
+	if(lastTrends === null)  {
+	    processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
+	}
+	else  {
+	    var tempArray = spotter.util.complements(rawData.trends, lastTrends);
+	    processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
+	}
+	lastTrends = rawData.trends;
+	processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
+	return processedData;
     }
 }
 
