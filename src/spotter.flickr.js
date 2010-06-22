@@ -2,7 +2,6 @@
  * spotter.flickr.js
  * Copyright (C) 2010 Semmy Purewal
  *
- * TODO: make sure flickr is only returning fresh results
  *
  */
 
@@ -26,6 +25,9 @@ spotter.modules.flickr.search = function(options)  {
     var api_key = options.api_key;
     var searchString = options.searchString;
     var tags = options.tags;
+
+    var lastTop = {id:-1};  //stupid hack
+
     
     this.url = function()  {
 	var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
@@ -37,13 +39,19 @@ spotter.modules.flickr.search = function(options)  {
 
     this.process = function(rawData)  {
 	var processedData = {};
+	processedData.data = [];
 	var photos = rawData.photos.photo;
-	for(i in photos)  {
+	var i;
+
+	for(i=0; i < photos.length && photos[i].id !== lastTop.id; i++)  {
 	    photos[i].url = buildPhotoURL(photos[i]);
 	    photos[i].user_url = "http://www.flickr.com/"+photos[i].owner;
+	    processedData.data.push(photos[i]);
 	}
-	processedData.update = (photos.length>0)?true:false;	
-	processedData.data = photos;
+
+	lastTop = photos[0];
+
+	processedData.update = (processedData.data.length>0)?true:false;	
 	return processedData;
     }
 
