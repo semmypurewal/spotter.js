@@ -55,7 +55,7 @@ spotter.modules.twitpic.search = function(options)  {
 	var i;
 	var rematch;
 	var twitpic_id;
-	refreshURL = rawData.refresh_url;
+	refreshURL = rawData.refresh_url || "";
 	processedData.update = (rawData.results.length>0)?true:false;
 
 	//process rawData and put it in processedData

@@ -46,7 +46,7 @@ spotter.modules.twitter.search = function(options)  {
 
     this.process = function(rawData)  {
 	var processedData = {};
-	refreshURL = rawData.refresh_url;
+	refreshURL = rawData.refresh_url || "";
 	processedData.update = (rawData.results.length>0)?true:false;
 	processedData.data = rawData.results;
 	return processedData;;
