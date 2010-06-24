@@ -20,6 +20,7 @@ function init()  {
      $("#image").fadeOut(500, function()  {
         $("#image").html("").append("<a class='image_link' target='_blank' href='"+photos[0].photo_url+"'><img src='"+photos[0].url+"'/></a>").fadeIn(500);
         $("#image").append("<div id='title'>"+photos[0].title+"</div>");
+        $("#image").append("<div id='userid'>"+photos[0].user_id+"</div>");
         $("#hidden").html("").append("<img src='"+photos[1].url+"'//>");  //preload the next image
         photos.push(photos.shift());
         timer = setTimeout(function() { slideshow(photos); }, 6000);
@@ -28,12 +29,13 @@ function init()  {
 
   //set up your notify function
   observerObject.notify = function(photos)  {
+      alert(photos.length);
       $("#hidden").html("").append("<img src='"+photos[0].url+"'/>");  //preload the first image
       slideshow(photos);
   }
 
   //create your spotter
-  var s = new spotter.Spotter("flickr.search", {api_key:"867d7e82cd6b196e83e27d308d97a7f0",tags:"chattanooga",frequency:0});
+  var s = new spotter.Spotter("flickr.feeds", {frequency:0, tags:"csatcofc"});
 
   //register your observer
   s.register(observerObject);
