@@ -25,7 +25,7 @@ spotter = {};
  *
  * @constructor
  * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
- * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justing Beiber"}
+ * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justin Beiber"}
  * @throws {Error} An error is thrown if there is a problem loading the module
  */
 spotter.Spotter = function(type, options)  {
@@ -63,7 +63,6 @@ spotter.Spotter = function(type, options)  {
      *
      * TODO: set up a time out so that if the last request doesn't return 
      *       the remaining requests are not blocked
-     *
      *
      */
     this.spot = function()  {
