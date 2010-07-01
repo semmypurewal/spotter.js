@@ -33,20 +33,11 @@ code.</p>
 <p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this
 is all that's necessary:</p>
 
-<pre><tt>//create your observing object
-var observerObject = new Object();
-
-//set up your notify function
-observerObject.notify = function(tweets)  {
-  //if this is called, tweets will not be empty
-  alert(tweets[0]['text']);
-}
-
-//create your spotter
-var s = new spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
+<pre><tt>//create your spotter
+var s = new com.yellowsocket.spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
 
 //register your observer
-s.register(observerObject);
+s.register(function(tweets) { alert(tweets[0].text); });
 
 //start BieberSpotting!
 s.spot(); </tt></pre>
