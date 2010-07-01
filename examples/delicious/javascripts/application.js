@@ -4,7 +4,7 @@
  */
 
 function init()  {
-    var s = new spotter.Spotter("delicious.recent", {tags:"zelda",frequency:30});
+    var s = new com.yellowsocket.spotter.Spotter("delicious.recent", {tags:"zelda",frequency:30});
     lc = new ListController($('#results_list'));
     s.register(lc);
     s.spot();

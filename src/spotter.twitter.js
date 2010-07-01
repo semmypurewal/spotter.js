@@ -6,19 +6,19 @@
  *
  */
 
-if(!spotter)
-    throw new Error("spotter not yet loaded!");
+if(!com.yellowsocket.spotter)
+    throw new Error("com.yellowsocket.spotter not yet loaded!");
 
-if(!spotter.util)
-    throw new Error("spotter.util not yet loaded!");
+if(!com.yellowsocket.spotter.util)
+    throw new Error("com.yellowsocket.spotter.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
+else if(typeof com.yellowsocket.spotter.modules != "object")
+    throw new Error("com.yellowsocket.spotter.modules is not an object!");
 
-if(!spotter.modules.twitter) spotter.modules.twitter = {};
-else if(typeof spotter.modules.twitter != "object")
-    throw new Error("spotter.modules.twitter is not an object!");
+if(!com.yellowsocket.spotter.modules.twitter) com.yellowsocket.spotter.modules.twitter = {};
+else if(typeof com.yellowsocket.spotter.modules.twitter != "object")
+    throw new Error("com.yellowsocket.spotter.modules.twitter is not an object!");
 
 /**
  * Required options: searchString
@@ -27,8 +27,8 @@ else if(typeof spotter.modules.twitter != "object")
  * update: true/false depending on whether there are new tweets
  * data: the new tweet objects themselves
  */
-spotter.modules.twitter.search = function(options)  {
-    spotter.modules.Module.call(this,options);
+com.yellowsocket.spotter.modules.twitter.search = function(options)  {
+    com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.searchString;
@@ -63,8 +63,8 @@ spotter.modules.twitter.search = function(options)  {
  * removed: removed trends since the last call
  * trends: all trends
  */
-spotter.modules.twitter.trends = function(options)  {
-    spotter.modules.Module.call(this,options);
+com.yellowsocket.spotter.modules.twitter.trends = function(options)  {
+    com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var lastTrends;
 
@@ -81,7 +81,7 @@ spotter.modules.twitter.trends = function(options)  {
 	    processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
 	}
 	else  {
-	    var tempArray = spotter.util.complements(rawData.trends, lastTrends);
+	    var tempArray = com.yellowsocket.spotter.util.complements(rawData.trends, lastTrends);
 	    processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
 	}
 	lastTrends = rawData.trends;

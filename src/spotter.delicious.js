@@ -6,25 +6,25 @@
  *
  */
 
-if(!spotter)
+if(!com.yellowsocket.spotter)
     throw new Error("spotter not yet loaded!");
 
-if(!spotter.util)
+if(!com.yellowsocket.spotter.util)
     throw new Error("spotter.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
+if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
+else if(typeof com.yellowsocket.spotter.modules != "object")
     throw new Error("spotter.modules is not an object!");
 
 
-if(!spotter.modules.delicious)
-    spotter.modules.delicious = {};
-else if(typeof spotter.modules.delicious != "object")
-    throw new Error("spotter.modules.delicious is not an object!");
+if(!com.yellowsocket.spotter.modules.delicious)
+    com.yellowsocket.spotter.modules.delicious = {};
+else if(typeof com.yellowsocket.spotter.modules.delicious != "object")
+    throw new Error("com.yellowsocket.spotter.modules.delicious is not an object!");
 
 
-spotter.modules.delicious.recent = function(options)  {
-    spotter.modules.Module.call(this,options);
+com.yellowsocket.spotter.modules.delicious.recent = function(options)  {
+    com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var lastTop;
     this.url = function()  {
@@ -67,7 +67,7 @@ spotter.modules.delicious.recent = function(options)  {
  *
  * @constructor
  */
-spotter.modules.delicious.tags = function(options)  {
+com.yellowsocket.spotter.modules.delicious.tags = function(options)  {
     spotter.modules.Module.call(this,options);
 
     var tags = options.tags;

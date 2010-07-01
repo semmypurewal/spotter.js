@@ -7,12 +7,14 @@
  * TODO: create a definite,permanant namespace for this library
  */
 
+com = {};
+if(!com.yellowsocket) com.yellowsocket = {};
 
 /**
  * @namespace
  * The namespace of this library.
  */
-spotter = {};
+com.yellowsocket.spotter = {};
 
 /************************************ SPOTTER ***********************************/
 
@@ -28,9 +30,9 @@ spotter = {};
  * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justin Beiber"}
  * @throws {Error} An error is thrown if there is a problem loading the module
  */
-spotter.Spotter = function(type, options)  {
-    spotter.Spotter.instanceCount = (spotter.Spotter.instanceCount === undefined)?1:spotter.Spotter.instanceCount+1;
-    var varName =  "so"+spotter.Spotter.instanceCount;
+com.yellowsocket.spotter.Spotter = function(type, options)  {
+    com.yellowsocket.spotter.Spotter.instanceCount = (com.yellowsocket.spotter.Spotter.instanceCount === undefined)?1:com.yellowsocket.spotter.Spotter.instanceCount+1;
+    var varName =  "so"+com.yellowsocket.spotter.Spotter.instanceCount;
     var spotting = false;
     var lastCallReturned = true;
     var lastScriptTag = null;
@@ -38,19 +40,19 @@ spotter.Spotter = function(type, options)  {
     var timer = null;
     var module;
 
-    window["spotter"][varName] = this;
+    window["com"]["yellowsocket"]["spotter"][varName] = this;
 
-    if(!spotter.modules[type.split(".")[0]] || !spotter.modules[type.split(".")[0]][type.split(".")[1]])
+    if(!com.yellowsocket.spotter.modules[type.split(".")[0]] || !com.yellowsocket.spotter.modules[type.split(".")[0]][type.split(".")[1]])
 	throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
 
     try  {
-	module = new (window["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
+	module = new (window["com"]["yellowsocket"]["spotter"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
     } catch(e)  {
 	throw new Error(e);
     }
 
     if(!module.url || !module.process)  {
-	throw new Error("Spotter: spotter.modules."+type+" is invalid.  (Does it return an object with url and process methods?)");
+	throw new Error("Spotter: com.yellowsocket.spotter.modules."+type+" is invalid.  (Does it return an object with url and process methods?)");
     }
 
 
@@ -73,10 +75,10 @@ spotter.Spotter = function(type, options)  {
 	if(lastCallReturned)  {
 	    url = module.url();
 	    if(url instanceof Object && url.callbackParam !== undefined)  {
-		url = url.url+'&'+url.callbackParam+'=spotter.'+varName+'.callback';
+		url = url.url+'&'+url.callbackParam+'=com.yellowsocket.spotter.'+varName+'.callback';
 	    }
 	    else  {
-		url += '&callback=spotter.'+varName+'.callback';
+		url += '&callback=com.yellowsocket.spotter.'+varName+'.callback';
 	    }
 	    url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 	    request(url);
@@ -175,14 +177,14 @@ spotter.Spotter = function(type, options)  {
  * @namespace
  * The module namespace
  */
-spotter.modules = {};
+com.yellowsocket.spotter.modules = {};
 
 /**
  * @constructor
  * The general Module from which everything else inherits
  *
  */
-spotter.modules.Module = function(options) {
+com.yellowsocket.spotter.modules.Module = function(options) {
     if(options["frequency"] === undefined)  {
 	frequency = 45;
     }
@@ -203,7 +205,7 @@ spotter.modules.Module = function(options) {
  * @namespace
  * The util namespace
  */
-spotter.util = {};
+com.yellowsocket.spotter.util = {};
 
 
 /**
@@ -225,7 +227,7 @@ spotter.util = {};
  * TODO: make this more general
  * TODO: make this private
  */
-spotter.util.changes = function(a,b)  {
+com.yellowsocket.spotter.util.changes = function(a,b)  {
     /*a = [{'name':'a'},{'name':'b'},{'name':'c'},{'name':'d'}];
       b = [{'name':'c'},{'name':'b'},{'name':'d'},{'name':'f'}];*/
     
@@ -251,7 +253,7 @@ spotter.util.changes = function(a,b)  {
  * TODO: use the changes algorithm as a subroutine
  *
  */
-spotter.util.complements = function(a, b)  {
+com.yellowsocket.spotter.util.complements = function(a, b)  {
     var counts = new Object();
     var aMinusB = new Array();
     var bMinusA = new Array();
