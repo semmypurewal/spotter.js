@@ -150,7 +150,9 @@ com.yellowsocket.spotter.Spotter = function(type, options)  {
      * @throws TypeError a TypeError is thrown if the parameter does not implement notify
      */
     this.register = function(observer) {
-	if(observer.notify !== undefined && typeof observer.notify === 'function')
+	if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')
+	    observers.push(observer);
+	else if(observer !== undefined && typeof observer === 'function')
 	    observers.push(observer);
 	else
 	    throw new TypeError('Observer must implement a notify method.');
@@ -163,8 +165,14 @@ com.yellowsocket.spotter.Spotter = function(type, options)  {
      * @param {Object} data that will be sent to the observers
      */
     var notifyObservers = function(data)  {
-	for(var i in observers)
-	    observers[i].notify(data);
+	for(var i in observers)  {
+	    if(typeof observers[i] === 'object')
+		observers[i].notify(data);
+	    else if(typeof observers[i] === 'function')
+		observers[i](data);
+	    else
+		throw new Error("observer list contains an invalid object");
+	}
     }
     /********** END OBSERVABLE MIXIN ***************/
 }//end spotter constructor

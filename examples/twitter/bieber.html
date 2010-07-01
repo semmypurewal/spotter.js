@@ -11,20 +11,11 @@ Copyright (C) 2010 Semmy Purewal
   <script type="text/javascript">
 
 function init()  {
-
-  //create your observing object
-  var observerObject = new Object();
-
-  //set up your notify function
-  observerObject.notify = function(tweets)  {
-    alert(tweets[0].text);
-  }
-
   //create your spotter
   var s = new com.yellowsocket.spotter.Spotter("twitter.search",{searchString:"Justin Bieber", frequency:10});
 
   //register your observer
-  s.register(observerObject);
+  s.register(function(tweets) { alert(tweets[0].text); });
 
   //start BieberSpotting!
   s.spot(); 
