@@ -35,6 +35,7 @@ com.yellowsocket.spotter.modules.identica.search = function(options)  {
     var refreshURL = "";
     var searchString = options.q;
 
+
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented
 
     if(searchString === undefined || searchString === "")
@@ -71,7 +72,7 @@ com.yellowsocket.spotter.modules.identica.search = function(options)  {
 com.yellowsocket.spotter.modules.identica.realtimesearch = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
-    var searchString = options.searchString;
+    var searchString = options.q;
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented
     var currentCount=1000;
     var counts = [0,0,currentCount];
