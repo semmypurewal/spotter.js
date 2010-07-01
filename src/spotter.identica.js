@@ -19,7 +19,7 @@ else if(typeof com.yellowsocket.spotter.modules.identica != "object")
     throw new Error("com.yellowsocket.spotter.modules.identica is not an object!");
 
 /**
- * Required options: searchString
+ * Required options: q (searchString)
  * Other available options: ?
  * callback return format: {update, data}
  * update: true/false depending on whether there are new tweets
@@ -33,12 +33,12 @@ com.yellowsocket.spotter.modules.identica.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
-    var searchString = options.searchString;
+    var searchString = options.q;
 
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented
 
     if(searchString === undefined || searchString === "")
-	throw new Error("identica search module requires searchString to be specified as an option");
+	throw new Error("identica search module requires a search string (q) to be specified as an option");
 
     this.url = function()  {
 	var url = 'http://identi.ca/api/search.json';

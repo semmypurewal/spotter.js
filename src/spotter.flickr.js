@@ -19,11 +19,11 @@ else if(typeof com.yellowsocket.spotter.modules.flickr != "object")
 com.yellowsocket.spotter.modules.flickr.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);    
 
-    if(options == undefined || options.api_key == undefined || (options.searchString == undefined && options.tags == undefined))
-	throw new Error("flickr search module requires an api_key and a searchString or tags to be defined as an option");
+    if(options == undefined || options.api_key == undefined || (options.q == undefined && options.tags == undefined))
+	throw new Error("flickr search module requires an api_key and a search string (q) or tags to be defined as an option");
 
     var api_key = options.api_key;
-    var searchString = options.searchString;
+    var searchString = options.q;
     var tags = options.tags;
 
     var lastTop = {id:-1};  //stupid hack

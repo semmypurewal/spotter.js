@@ -34,7 +34,7 @@ code.</p>
 is all that's necessary:</p>
 
 <pre><tt>//create your spotter
-var s = new com.yellowsocket.spotter.Spotter("twitter.search",{searchString:"Justin Bieber"});
+var s = new com.yellowsocket.spotter.Spotter("twitter.search",{q:"Justin Bieber"});
 
 //register your observer
 s.register(function(tweets) { alert(tweets[0].text); });

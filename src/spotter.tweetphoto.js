@@ -18,7 +18,7 @@ else if(typeof com.yellowsocket.spotter.modules.tweetphoto != "object")
     throw new Error("com.yellowsocket.spotter.modules.tweetphoto is not an object!");
 
 /**
- * Required options: searchString
+ * Required options: q
  * Other available options: ?
  * callback return format: {update, data}
  *
@@ -36,10 +36,10 @@ com.yellowsocket.spotter.modules.tweetphoto.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
-    var searchString = options.searchString;
+    var searchString = options.q;
 
     if(searchString === undefined || searchString === "")
-	throw new Error("tweetphoto search module requires searchString to be specified as an option");
+	throw new Error("tweetphoto search module requires a search string (q) to be specified as an option");
 
     this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'

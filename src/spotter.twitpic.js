@@ -39,10 +39,10 @@ com.yellowsocket.spotter.modules.twitpic.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
-    var searchString = options.searchString;
+    var searchString = options.q;
 
     if(searchString === undefined || searchString === "")
-	throw new Error("twitpic search module requires searchString to be specified as an option");
+	throw new Error("twitpic search module requires a search string (q) to be specified as an option");
 
     this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'

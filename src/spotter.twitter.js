@@ -21,7 +21,7 @@ else if(typeof com.yellowsocket.spotter.modules.twitter != "object")
     throw new Error("com.yellowsocket.spotter.modules.twitter is not an object!");
 
 /**
- * Required options: searchString
+ * Required options: q
  * Other available options: ?
  * callback return format: {update, data}
  * update: true/false depending on whether there are new tweets
@@ -31,10 +31,10 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
-    var searchString = options.searchString;
+    var searchString = options.q;
 
     if(searchString === undefined || searchString === "")
-	throw new Error("twitter search module requires searchString to be specified as an option");
+	throw new Error("twitter search module requires a search string (q) to be specified as an option");
     
     if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
 
