@@ -32,11 +32,29 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
 
     var refreshURL = "";
     var searchString = options.q;
+    var exclude = (options.exclude !== undefined)?options.exclude.split(","):[];
+    var i;
+    var excludeREString = "";
+
+
 
     if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires a search string (q) to be specified as an option");
     
     if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
+
+    if(exclude !== undefined)  {
+	for(i=0;i < exclude.length; i++)  {
+	    if(exclude[i] === "twitpic"||
+	       exclude[i] === "tweetphoto")  {
+		excludeREString += (excludeREString==="")?exclude[i]:"|"+exclude[i];
+	    }
+	    else  {
+		throw new Error(exclude[i] + " not a valid exclude string, try 'tweetphoto' and/or 'twitpic'");
+	    }
+	}
+    }
+
 
     this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'
@@ -47,11 +65,30 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
     this.process = function(rawData)  {
 	var processedData = {};
 	refreshURL = rawData.refresh_url || "";
-	processedData.update = (rawData.results.length>0)?true:false;
-	processedData.data = rawData.results;
+
+	if(excludeREString === "")  {
+	    processedData.data = rawData.results;
+	}
+	else  {
+	    processedData.data = [];
+	    //create re
+
+	    var excludeRE = new RegExp(excludeREString);
+	    //filter the data
+	    for(i in rawData.results)  {
+		if(rawData.results[i].text.match(excludeRE) === null)  {
+		    processedData.data.push(rawData.results[i]);
+		}
+		else  {
+		    //alert("filtered:"+rawData.results[i].text);
+		}
+	    }
+	}
+
+	processedData.update = (processedData.data.length>0)?true:false;
+
 	return processedData;;
     }
-
 };
 
 
