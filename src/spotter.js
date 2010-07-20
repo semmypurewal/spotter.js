@@ -193,18 +193,18 @@ com.yellowsocket.spotter.modules = {};
  *
  */
 com.yellowsocket.spotter.modules.Module = function(options) {
-    var frequency;
+    var period;
 
     
-    if(options["frequency"] === undefined)  {
-	frequency = 45;
+    if(options["period"] === undefined)  {
+	period = 45;
     }
     else  {
-	frequency = options["frequency"];
+	period = options["period"];
     }
 
     this.nextTimeout = function()  {
-	return frequency;
+	return period;
     }
 }
 
