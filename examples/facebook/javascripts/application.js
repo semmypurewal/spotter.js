@@ -16,11 +16,11 @@ function TrendController(view)  {
 }
 
 TrendController.prototype.notify = function(trends)  {
-    var trend = trends.added[4].name;
-    //var trend = "linux|GNU|apple|mac";
+    //var trend = trends.added[0].name;
+    var trend = "computer";
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = new com.yellowsocket.spotter.Spotter("facebook.search",{q:"computer"});
+    this.spotter = new com.yellowsocket.spotter.Spotter("facebook.search",{q:trend});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
     this.spotter.spot();
@@ -36,14 +36,15 @@ ListController.prototype.notify = function(statuses)  {
 	var temp = $("<div></div>");
 	$(temp).attr('id',statuses[t]['id']);
         $(temp).attr('class','tweet');
-	$(temp).html("<a target='_blank' class='from_user' href=''>"+statuses[t]['from']['name']+
+	$(temp).html("<a target='_blank' class='from_user' href='"+statuses[t]['profile_url']+"'>"+statuses[t]['from']['name']+
                      "</a> &nbsp;"+statuses[t]['message']);
 	profileImg = $("<img></img>");
-	//profileImg.attr('src',statuses[t]['user']['profile_image_url']);
-	//profileImg.attr('class','profile_image');
+	profileImg.attr('src',statuses[t]['profile_image_url']);
+	profileImg.attr('class','profile_image');
 	profileImg.attr('height',43);
 	profileImg.attr('width',43);
 	$(temp).prepend(profileImg);
+	$(temp).append("<div>"+statuses[t].created_time+"</div>");
 	$(temp).hide();
 	$(this.view).prepend(temp);
 	$(temp).fadeIn();

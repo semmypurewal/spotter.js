@@ -29,7 +29,7 @@ com.yellowsocket.spotter.modules.facebook.search = function(options)  {
     com.yellowsocket.spotter.modules.Module.call(this,options);
 
     var searchString = options.q;
-    var lastId = null;
+    var lastCreatedTime = null;
     var i;
 
     if(searchString === undefined || searchString === "")
@@ -45,23 +45,24 @@ com.yellowsocket.spotter.modules.facebook.search = function(options)  {
 
     this.process = function(rawData)  {
 	var processedData = {};
-	lastId = rawData.data[0].id || "";
 
-	if(lastId === "" | lastId === null)  {
-	    processedData.data = rawData.data;
-	}
-	else  {
-	    processedData.data = [];
-	    //filter the data
-	    for(i in rawData.data)  {
-		if(lastId === "" || rawData.data[i].id > lastId)  {
-		    processedData.data.push(rawData.data[i]);
-		}
-		else  {
-		    //alert("filtered:"+rawData.data.results[i].text);
-		}
+	//alert(lastCreatedTime);
+
+	processedData.data = [];
+	//filter the data
+	for(i in rawData.data)  {
+	    if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime) && rawData.data[i].type === 'status')  {
+		rawData.data[i].profile_image_url = "http://graph.facebook.com/"+rawData.data[i].from.id+"/picture";
+		rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
+		processedData.data.push(rawData.data[i]);
+	    }
+	    else  {
+		//alert("filtered:"+rawData.data.results[i].text);
 	    }
 	}
+
+
+	lastCreatedTime = rawData.data[0]['created_time'];
 
 	processedData.update = (processedData.data.length>0)?true:false;
 
