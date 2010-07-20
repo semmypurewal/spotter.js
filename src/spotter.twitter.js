@@ -37,11 +37,8 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
     var excludeREString = "";
 
 
-
     if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires a search string (q) to be specified as an option");
-    
-    if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
 
     if(exclude !== undefined)  {
 	for(i=0;i < exclude.length; i++)  {

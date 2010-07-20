@@ -35,8 +35,6 @@ com.yellowsocket.spotter.modules.facebook.search = function(options)  {
     if(searchString === undefined || searchString === "")
 	throw new Error("facebook search module requires a search string (q) to be specified as an option");
     
-    if(!frequency) frequency = MAX_FREQUENCY;  //if not defined, we can do more sophisticated polling
-
     this.url = function()  {
 	var url = 'http://graph.facebook.com/search'
 	url += '?q='+escape(searchString);

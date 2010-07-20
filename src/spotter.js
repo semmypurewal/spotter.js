@@ -193,6 +193,9 @@ com.yellowsocket.spotter.modules = {};
  *
  */
 com.yellowsocket.spotter.modules.Module = function(options) {
+    var frequency;
+
+    
     if(options["frequency"] === undefined)  {
 	frequency = 45;
     }
