@@ -4,7 +4,7 @@
  */
 
 function init()  {
-    var trendSpotter = new com.yellowsocket.spotter.Spotter("twitter.trends", {exclude:"hashtags",frequency:60});
+    var trendSpotter = new com.yellowsocket.spotter.Spotter("twitter.trends", {exclude:"hashtags",period:60});
     var tc = new TrendController($("#trend_view"));
     trendSpotter.register(tc);
     trendSpotter.spot();
@@ -20,7 +20,7 @@ TrendController.prototype.notify = function(trends)  {
     var trend = "computer";
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = new com.yellowsocket.spotter.Spotter("facebook.search",{q:trend});
+    this.spotter = new com.yellowsocket.spotter.Spotter("facebook.search",{q:trend,period:30});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
     this.spotter.spot();
