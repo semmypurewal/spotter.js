@@ -3,11 +3,9 @@
  * Copyright (C) 2010 Semmy Purewal
  *
  * @version .1
- *
- * TODO: create a definite,permanant namespace for this library
  */
 
-com = {};
+if(!window['com']) window['com'] = {};
 if(!com.yellowsocket) com.yellowsocket = {};
 
 /**
