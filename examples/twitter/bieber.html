@@ -12,7 +12,7 @@ Copyright (C) 2010 Semmy Purewal
 
 function init()  {
   //create your spotter
-  var s = new com.yellowsocket.spotter.Spotter("twitter.search",{q:"bieber", period:10, exclude:"tweetphoto,twitpic"});
+  var s = new Spotter("twitter.search",{q:"bieber", period:10,exclude:"tweetphoto,twitpic"});
 
   //register your observer
   s.register(function(tweets) { alert(tweets[0].text); });

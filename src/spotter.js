@@ -276,3 +276,6 @@ com.yellowsocket.spotter.util.complements = function(a, b)  {
 }
 
 /************************************ END UTILS ***********************************/
+
+//namespace shortcut
+Spotter = com.yellowsocket.spotter.Spotter;
