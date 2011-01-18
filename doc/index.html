@@ -1,0 +1,72 @@
+<!--
+Spotter Examples
+Copyright (C) 2010 Semmy Purewal
+-->
+
+<html>
+ <head>
+  <link rel="stylesheet" type="text/css" href="../stylesheets/spotter-style.css"></link>
+ </head>
+
+ <body>
+  <h2>Spotter</h2>
+  <a href="../index.html">home</a> <a href="../examples">examples</a> <a href="../download">download</a> <a href="">documentation</a>
+
+  <h3>Basics</h3>
+  <p>Every Spotter object is created as follows:</p>
+
+<pre><tt>//create your spotter
+var s = new Spotter(module_name,options_object);
+</tt></pre>
+
+  <p>Here, <tt>module_name</tt> is a String representing the name of the module and <tt>options_object</tt> is a a JSON object of options associated with that module.  For example, to create a spotter object that watches for new english tweets relating to Justin Bieber, you would do the following:</p>
+
+<pre><tt>//create your spotter
+var s = new Spotter("twitter.search",{q:"Justin Bieber", lang:"en"});
+</tt></pre>
+
+  <p>To get something to happen when new tweets about Justin Bieber arrive, you need to register a function to handle the new tweets.  You can do that with an anonymous function, a function variable or with an object that implements a <tt>notify</tt> method (as per the observer design pattern).  In the following example we register an anonymous function that alerts all of the latest tweets:</p>
+
+<pre><tt>//register your observer
+s.register(function(tweets) {
+    for(var t in tweets)  {
+      alert(tweets[t].text);
+    }
+});
+</tt></pre>
+
+  <p>Usually you'll want to insert the tweets (or other data) into the DOM instead of alerting them.  I use <a target="_blank" href="http://www.jquery.org">jQuery</a> to do this in some of the examples.</p>
+
+  <p>Last, but not least, once you register create your object and register your method, you want to start your spotter spotting.  To do this, simply call the spot method.  Later, if you want to kill your spotter, simply call the stop method.</p>
+
+
+<pre><tt>s.spot();  //start your spotter
+
+//....
+
+s.stop();  //stop your spotter if necessary
+</tt></pre>
+
+  <h3>Modules</h3>
+  <p>Every module allows you to specify the polling timeout, or the period, as an option.  If you use <tt>period:0</tt> as an option, spotter will only make the request once.  In general, you don't want to use a polling frequency of more than 4 times a minute (or <tt>period:15</tt>) or your app might get rate limited.</p>
+  
+
+  <h4>Twitter</h4>
+  <p><tt><b>twitter.search</b></tt>: requires the <tt>q</tt> option which is a search string.  You can also specify a language with the <tt>lang</tt> options.  I usually use <tt>lang:"en"</tt> to specify retrieving english language tweets.</p>
+   
+  <p><tt><b>twitter.trends</b></tt>: no required options, but you can specify <tt>exclude:hashtags</tt> to ignore trending hashtags (hashtags are metadata appear in tweets as words with a <tt>#</tt> in front of them)</p>
+
+
+  <h4>Flickr</h4>
+  <p>Note that the Flickr module requires you to obtain and register a flickr API key for your App.  You can get one by logging in with your yahoo account <a href="http://www.flickr.com/services/api/keys/apply">here</a>.  Note that flickr's feeds are not updated in real-time, so you might want to use <tt>period:0</tt> as an option (see above).
+  <p><tt><b>flickr.search</b></tt>: required options are <tt>api-key</tt> and <tt>q</tt> which is a search string.  You can also search for certain <tt>tags</tt>.
+  <p><tt><b>flickr.feeds</b></tt>: required options are <tt>api-key</tt>.  With no other options, you just get the public timeline, but you can also specify <tt>tags</tt>.
+
+  <h4>Twitpic</h4>
+  <p><tt><b>twitpic.search</b></tt>: required option is <tt>q</tt> which is a search string.
+
+  <h4>Facebook</h4>
+  <p><tt><b>facebook.search</b></tt>: required option is <tt>q</tt> which is a search string.
+
+ </body>
+</html>
