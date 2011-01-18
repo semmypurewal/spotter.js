@@ -19,7 +19,7 @@ TrendController.prototype.notify = function(trends)  {
     var trend = trends.trends[trends.trends.length-1].name;
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = new com.yellowsocket.spotter.Spotter("twitter.search",{q:trend, period:30});
+    this.spotter = new com.yellowsocket.spotter.Spotter("twitter.search",{q:trend, period:30, lang:'en'});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
     this.spotter.spot();

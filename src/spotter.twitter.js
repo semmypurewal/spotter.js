@@ -33,9 +33,9 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
     var refreshURL = "";
     var searchString = options.q;
     var exclude = (options.exclude !== undefined)?options.exclude.split(","):[];
+    var lang = options.lang;
     var i;
     var excludeREString = "";
-
 
     if(searchString === undefined || searchString === "")
 	throw new Error("twitter search module requires a search string (q) to be specified as an option");
@@ -56,6 +56,7 @@ com.yellowsocket.spotter.modules.twitter.search = function(options)  {
     this.url = function()  {
 	var url = 'http://search.twitter.com/search.json'
 	url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
+	url += (lang)?'&lang='+lang:'';
 	return url;
     }
 

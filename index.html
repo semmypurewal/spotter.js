@@ -12,8 +12,8 @@ Copyright (C) 2010 Semmy Purewal
   <h2>Spotter</h2>
   <a href="index.html">home</a> <a href="examples">examples</a> <a href="src">download</a> <a href="doc">documentation</a>
 
-<p>Spotter is a client-side JavaScript library designed for browser-based real-time JSON applications and mashups.</p>
-<p>In a nutshell, it is an abstraction of push technologies like <a target="_blank" href="http://en.wikipedia.org/wiki/Comet_(programming)">Comet</a>, which typically require server-side programming.  The goal of Spotter is to allow client-side developers to create applications that respond to 'pushes' so that when APIs support a push protocol (or cross-site long polling) the back-end can be rewritten to exploit this technology, without the application developer needing to change anything!</p>
+<p>Spotter is a JSONP polling library designed for browser-based real-time applications and mashups.</p>
+
 
 
 <h3>Features</h3>
@@ -30,14 +30,15 @@ the notify function) register with a Spotter object and are only notified when t
 receives new data.  You can also use Spotter to send requests at specified intervals in your
 code.</p>
 
-<p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this
-is all that's necessary:</p>
+<p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this is all that's necessary:</p>
 
 <pre><tt>//create your spotter
-var s = new com.yellowsocket.spotter.Spotter("twitter.search",{q:"Justin Bieber"});
+var s = new Spotter("twitter.search",{q:"Justin Bieber"});
 
 //register your observer
-s.register(function(tweets) { alert(tweets[0].text); });
+s.register(function(tweets) {
+    alert(tweets[0].text);  //alert the first returned tweet
+  });
 
 //start BieberSpotting!
 s.spot(); </tt></pre>
