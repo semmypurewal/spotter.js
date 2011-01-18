@@ -4,7 +4,7 @@
  */
 
 function init()  {
-    var trendSpotter = new com.yellowsocket.spotter.Spotter("twitter.trends", {exclude:"hashtags",period:60});
+    var trendSpotter = new Spotter("twitter.trends", {exclude:"hashtags",period:60});
     var tc = new TrendController($("#trend_view"));
     trendSpotter.register(tc);
     trendSpotter.spot();

@@ -29,13 +29,12 @@ function init()  {
 
   //set up your notify function
   observerObject.notify = function(photos)  {
-      alert(photos.length);
       $("#hidden").html("").append("<img src='"+photos[0].url+"'/>");  //preload the first image
       slideshow(photos);
   }
 
   //create your spotter
-  var s = new spotter.Spotter("flickr.feeds", {frequency:0, tags:"csatcofc"});
+  var s = new Spotter("flickr.feeds", {frequency:0, tags:"csatcofc"});
 
   //register your observer
   s.register(observerObject);

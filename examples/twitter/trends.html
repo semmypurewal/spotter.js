@@ -19,7 +19,7 @@ function init()  {
   var observerObject = new Object();
 
   //create your spotter
-  var s = new com.yellowsocket.spotter.Spotter("twitter.trends",{exclude:"hashtags", period:30});
+  var s = new Spotter("twitter.trends",{exclude:"hashtags", period:30});
 
   observerObject.notify = function(trends) {
     var newTrends = trends.added;
