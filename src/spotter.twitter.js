@@ -104,7 +104,7 @@ com.yellowsocket.spotter.modules.twitter.trends = function(options)  {
     var lastTrends;
 
     this.url = function()  {
-	var url = "http://search.twitter.com/trends.json?";
+	var url = "http://api.twitter.com/trends.json?";
 	if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
 	return url;
     }
