@@ -65,7 +65,7 @@ com.yellowsocket.spotter.Spotter = function(type, options)  {
      *       the remaining requests are not blocked
      *
      */
-    this.spot = function()  {
+    this.start = function()  {
 	if(!spotting) spotting = true;
 	var url;
 	var obj = this;
@@ -82,7 +82,7 @@ com.yellowsocket.spotter.Spotter = function(type, options)  {
 	    request(url);
 	}
 	if(module.nextTimeout() > 0)  {
-	    timer = setTimeout(function() { obj.spot(); }, module.nextTimeout()*1000);
+	    timer = setTimeout(function() { obj.start(); }, module.nextTimeout()*1000);
 	}
     }
     

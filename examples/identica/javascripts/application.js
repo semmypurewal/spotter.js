@@ -6,8 +6,9 @@
 function init()  {
     var trendSpotter = new Spotter("twitter.trends", {exclude:"hashtags",period:60});
     var tc = new TrendController($("#trend_view"));
-    trendSpotter.register(tc);
-    trendSpotter.spot();
+    tc.notify();
+    //trendSpotter.register(tc);
+    //trendSpotter.spot();
 }
 
 function TrendController(view)  {
@@ -16,14 +17,14 @@ function TrendController(view)  {
 }
 
 TrendController.prototype.notify = function(trends)  {
-    var trend = trends.added[4].name;
+    //var trend = trends.added[4].name;
     var trend = "linux|GNU|apple|mac";
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
     this.spotter = new com.yellowsocket.spotter.Spotter("identica.realtimesearch",{q:trend});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
-    this.spotter.spot();
+    this.spotter.start();
 }
 
 

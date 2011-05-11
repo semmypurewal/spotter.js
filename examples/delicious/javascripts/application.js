@@ -7,7 +7,7 @@ function init()  {
     var s = new Spotter("delicious.recent", {period:30});
     lc = new ListController($('#results_list'));
     s.register(lc);
-    s.spot();
+    s.start();
 }
 
 function ListController(view)  {

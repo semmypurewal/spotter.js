@@ -6,8 +6,9 @@
 function init()  {
     var trendSpotter = new Spotter("twitter.trends", {exclude:"hashtags",period:60});
     var tc = new TrendController($("#trend_view"));
-    trendSpotter.register(tc);
-    trendSpotter.spot();
+    //trendSpotter.register(tc);
+    //trendSpotter.start();
+    tc.notify();
 }
 
 function TrendController(view)  {
@@ -23,7 +24,7 @@ TrendController.prototype.notify = function(trends)  {
     this.spotter = new com.yellowsocket.spotter.Spotter("facebook.search",{q:trend,period:30});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
-    this.spotter.spot();
+    this.spotter.start();
 }
 
 
