@@ -4,19 +4,19 @@
  *
  */
 
-if(!com.yellowsocket.spotter)
-    throw new Error("com.yellowsocket.spotter not yet loaded!");
+if(!spotter)
+    throw new Error("spotter not yet loaded!");
 
-if(!com.yellowsocket.spotter.util)
-    throw new Error("com.yellowsocket.spotter.util not yet loaded!");
+if(!spotter.util)
+    throw new Error("spotter.util not yet loaded!");
 
-if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
-else if(typeof com.yellowsocket.spotter.modules != "object")
-    throw new Error("com.yellowsocket.spotter.modules is not an object!");
+if(!spotter.modules) spotter.modules = {};
+else if(typeof spotter.modules != "object")
+    throw new Error("spotter.modules is not an object!");
 
-if(!com.yellowsocket.spotter.modules.identica) com.yellowsocket.spotter.modules.identica = {};
-else if(typeof com.yellowsocket.spotter.modules.identica != "object")
-    throw new Error("com.yellowsocket.spotter.modules.identica is not an object!");
+if(!spotter.modules.identica) spotter.modules.identica = {};
+else if(typeof spotter.modules.identica != "object")
+    throw new Error("spotter.modules.identica is not an object!");
 
 /**
  * Required options: q (searchString)
@@ -29,8 +29,8 @@ else if(typeof com.yellowsocket.spotter.modules.identica != "object")
  *       this should work just like the twitter module.  It may be possible
  *       to merge the two modules somehow.
  */
-com.yellowsocket.spotter.modules.identica.search = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);
+spotter.modules.identica.search = function(options)  {
+    spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.q;
@@ -69,8 +69,8 @@ com.yellowsocket.spotter.modules.identica.search = function(options)  {
     }
 };
 
-com.yellowsocket.spotter.modules.identica.realtimesearch = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);
+spotter.modules.identica.realtimesearch = function(options)  {
+    spotter.modules.Module.call(this,options);
 
     var searchString = options.q;
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented

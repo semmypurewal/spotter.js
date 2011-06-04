@@ -5,19 +5,19 @@
  *
  */
 
-if(!com.yellowsocket.spotter)
-    throw new Error("com.yellowsocket.spotter not yet loaded!");
+if(!spotter)
+    throw new Error("spotter not yet loaded!");
 
-if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
-else if(typeof com.yellowsocket.spotter.modules != "object")
-    throw new Error("com.yellowsocket.spotter.modules is not an object!");
+if(!spotter.modules) spotter.modules = {};
+else if(typeof spotter.modules != "object")
+    throw new Error("spotter.modules is not an object!");
 
-if(!com.yellowsocket.spotter.modules.flickr) com.yellowsocket.spotter.modules.flickr = {};
-else if(typeof com.yellowsocket.spotter.modules.flickr != "object")
-    throw new Error("com.yellowsocket.spotter.modules.flickr is not an object!");
+if(!spotter.modules.flickr) spotter.modules.flickr = {};
+else if(typeof spotter.modules.flickr != "object")
+    throw new Error("spotter.modules.flickr is not an object!");
 
-com.yellowsocket.spotter.modules.flickr.search = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);    
+spotter.modules.flickr.search = function(options)  {
+    spotter.modules.Module.call(this,options);    
 
     if(options == undefined || options.api_key == undefined || (options.q == undefined && options.tags == undefined))
 	throw new Error("flickr search module requires an api_key and a search string (q) or tags to be defined as an option");
@@ -62,8 +62,8 @@ com.yellowsocket.spotter.modules.flickr.search = function(options)  {
     }
 }
 
-com.yellowsocket.spotter.modules.flickr.feeds = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);
+spotter.modules.flickr.feeds = function(options)  {
+    spotter.modules.Module.call(this,options);
 
     var tags = options.tags || null;
 

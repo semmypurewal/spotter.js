@@ -4,19 +4,19 @@
  *
  */
 
-if(!com.yellowsocket.spotter)
-    throw new Error("com.yellowsocket.spotter not yet loaded!");
+if(!spotter)
+    throw new Error("spotter not yet loaded!");
 
-if(!com.yellowsocket.spotter.util)
-    throw new Error("com.yellowsocket.spotter.util not yet loaded!");
+if(!spotter.util)
+    throw new Error("spotter.util not yet loaded!");
 
-if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
-else if(typeof com.yellowsocket.spotter.modules != "object")
-    throw new Error("com.yellowsocket.spotter.modules is not an object!");
+if(!spotter.modules) spotter.modules = {};
+else if(typeof spotter.modules != "object")
+    throw new Error("spotter.modules is not an object!");
 
-if(!com.yellowsocket.spotter.modules.facebook) com.yellowsocket.spotter.modules.facebook = {};
-else if(typeof com.yellowsocket.spotter.modules.facebook != "object")
-    throw new Error("com.yellowsocket.spotter.modules.facebook is not an object!");
+if(!spotter.modules.facebook) spotter.modules.facebook = {};
+else if(typeof spotter.modules.facebook != "object")
+    throw new Error("spotter.modules.facebook is not an object!");
 
 /**
  * Required options: q
@@ -25,8 +25,8 @@ else if(typeof com.yellowsocket.spotter.modules.facebook != "object")
  * update: true/false depending on whether there are new tweets
  * data: the new tweet objects themselves
  */
-com.yellowsocket.spotter.modules.facebook.search = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);
+spotter.modules.facebook.search = function(options)  {
+    spotter.modules.Module.call(this,options);
 
     var searchString = options.q;
     var lastCreatedTime = null;

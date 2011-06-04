@@ -3,19 +3,19 @@
  * Copyright (C) 2010 Semmy Purewal
  */
 
-if(!com.yellowsocket.spotter)
-    throw new Error("com.yellowsocket.spotter not yet loaded!");
+if(!spotter)
+    throw new Error("spotter not yet loaded!");
 
-if(!com.yellowsocket.spotter.util)
-    throw new Error("com.yellowsocket.spotter.util not yet loaded!");
+if(!spotter.util)
+    throw new Error("spotter.util not yet loaded!");
 
-if(!com.yellowsocket.spotter.modules) com.yellowsocket.spotter.modules = {};
-else if(typeof com.yellowsocket.spotter.modules != "object")
-    throw new Error("com.yellowsocket.spotter.modules is not an object!");
+if(!spotter.modules) spotter.modules = {};
+else if(typeof spotter.modules != "object")
+    throw new Error("spotter.modules is not an object!");
 
-if(!com.yellowsocket.spotter.modules.twitpic) com.yellowsocket.spotter.modules.twitpic = {};
-else if(typeof com.yellowsocket.spotter.modules.twitpic != "object")
-    throw new Error("com.yellowsocket.spotter.modules.twitpic is not an object!");
+if(!spotter.modules.twitpic) spotter.modules.twitpic = {};
+else if(typeof spotter.modules.twitpic != "object")
+    throw new Error("spotter.modules.twitpic is not an object!");
 
 /**
  * Required options: searchString
@@ -35,8 +35,8 @@ else if(typeof com.yellowsocket.spotter.modules.twitpic != "object")
  * update: true/false depending on whether there are new tweets
  * data: the tweet objects themselves
  */
-com.yellowsocket.spotter.modules.twitpic.search = function(options)  {
-    com.yellowsocket.spotter.modules.Module.call(this,options);
+spotter.modules.twitpic.search = function(options)  {
+    spotter.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.q;
