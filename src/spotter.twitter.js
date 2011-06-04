@@ -6,19 +6,19 @@
  *
  */
 
-if(!spotter)
+if(!spotterjs)
     throw new Error("spotter not yet loaded!");
 
-if(!spotter.util)
-    throw new Error("spotter.util not yet loaded!");
+if(!spotterjs.util)
+    throw new Error("spotterjs.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
-if(!spotter.modules.twitter) spotter.modules.twitter = {};
-else if(typeof spotter.modules.twitter != "object")
-    throw new Error("spotter.modules.twitter is not an object!");
+if(!spotterjs.modules.twitter) spotterjs.modules.twitter = {};
+else if(typeof spotterjs.modules.twitter != "object")
+    throw new Error("spotterjs.modules.twitter is not an object!");
 
 /**
  * Required options: q
@@ -27,8 +27,8 @@ else if(typeof spotter.modules.twitter != "object")
  * update: true/false depending on whether there are new tweets
  * data: the new tweet objects themselves
  */
-spotter.modules.twitter.search = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.twitter.search = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.q;
@@ -98,8 +98,8 @@ spotter.modules.twitter.search = function(options)  {
  * removed: removed trends since the last call
  * trends: all trends
  */
-spotter.modules.twitter.trends = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.twitter.trends = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var lastTrends;
 
@@ -116,7 +116,7 @@ spotter.modules.twitter.trends = function(options)  {
 	    processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
 	}
 	else  {
-	    var tempArray = spotter.util.complements(rawData.trends, lastTrends);
+	    var tempArray = spotterjs.util.complements(rawData.trends, lastTrends);
 	    processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
 	}
 	lastTrends = rawData.trends;

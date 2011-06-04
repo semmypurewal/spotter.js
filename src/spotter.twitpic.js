@@ -3,19 +3,19 @@
  * Copyright (C) 2010 Semmy Purewal
  */
 
-if(!spotter)
-    throw new Error("spotter not yet loaded!");
+if(!spotterjs)
+    throw new Error("spotterjs not yet loaded!");
 
-if(!spotter.util)
-    throw new Error("spotter.util not yet loaded!");
+if(!spotterjs.util)
+    throw new Error("spotterjs.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
-if(!spotter.modules.twitpic) spotter.modules.twitpic = {};
-else if(typeof spotter.modules.twitpic != "object")
-    throw new Error("spotter.modules.twitpic is not an object!");
+if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
+else if(typeof spotterjs.modules.twitpic != "object")
+    throw new Error("spotterjs.modules.twitpic is not an object!");
 
 /**
  * Required options: searchString
@@ -35,8 +35,8 @@ else if(typeof spotter.modules.twitpic != "object")
  * update: true/false depending on whether there are new tweets
  * data: the tweet objects themselves
  */
-spotter.modules.twitpic.search = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.twitpic.search = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.q;

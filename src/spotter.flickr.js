@@ -5,19 +5,19 @@
  *
  */
 
-if(!spotter)
+if(!spotterjs)
     throw new Error("spotter not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
-if(!spotter.modules.flickr) spotter.modules.flickr = {};
-else if(typeof spotter.modules.flickr != "object")
-    throw new Error("spotter.modules.flickr is not an object!");
+if(!spotterjs.modules.flickr) spotterjs.modules.flickr = {};
+else if(typeof spotterjs.modules.flickr != "object")
+    throw new Error("spotterjs.modules.flickr is not an object!");
 
-spotter.modules.flickr.search = function(options)  {
-    spotter.modules.Module.call(this,options);    
+spotterjs.modules.flickr.search = function(options)  {
+    spotterjs.modules.Module.call(this,options);    
 
     if(options == undefined || options.api_key == undefined || (options.q == undefined && options.tags == undefined))
 	throw new Error("flickr search module requires an api_key and a search string (q) or tags to be defined as an option");
@@ -62,8 +62,8 @@ spotter.modules.flickr.search = function(options)  {
     }
 }
 
-spotter.modules.flickr.feeds = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.flickr.feeds = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var tags = options.tags || null;
 

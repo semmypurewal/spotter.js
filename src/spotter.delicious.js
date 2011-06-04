@@ -6,25 +6,25 @@
  *
  */
 
-if(!spotter)
-    throw new Error("spotter not yet loaded!");
+if(!spotterjs)
+    throw new Error("spotterjs not yet loaded!");
 
-if(!spotter.util)
-    throw new Error("spotter.util not yet loaded!");
+if(!spotterjs.util)
+    throw new Error("spotterjs.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
-
-
-if(!spotter.modules.delicious)
-    spotter.modules.delicious = {};
-else if(typeof spotter.modules.delicious != "object")
-    throw new Error("spotter.modules.delicious is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
 
-spotter.modules.delicious.recent = function(options)  {
-    spotter.modules.Module.call(this,options);
+if(!spotterjs.modules.delicious)
+    spotterjs.modules.delicious = {};
+else if(typeof spotterjs.modules.delicious != "object")
+    throw new Error("spotterjs.modules.delicious is not an object!");
+
+
+spotterjs.modules.delicious.recent = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var lastTop;
     this.url = function()  {
@@ -67,8 +67,8 @@ spotter.modules.delicious.recent = function(options)  {
  *
  * @constructor
  */
-spotter.modules.delicious.tags = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.delicious.tags = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var tags = options.tags;
 

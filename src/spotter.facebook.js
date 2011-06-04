@@ -4,19 +4,19 @@
  *
  */
 
-if(!spotter)
+if(!spotterjs)
     throw new Error("spotter not yet loaded!");
 
-if(!spotter.util)
+if(!spotterjs.util)
     throw new Error("spotter.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
-if(!spotter.modules.facebook) spotter.modules.facebook = {};
-else if(typeof spotter.modules.facebook != "object")
-    throw new Error("spotter.modules.facebook is not an object!");
+if(!spotterjs.modules.facebook) spotterjs.modules.facebook = {};
+else if(typeof spotterjs.modules.facebook != "object")
+    throw new Error("spotterjs.modules.facebook is not an object!");
 
 /**
  * Required options: q
@@ -25,8 +25,8 @@ else if(typeof spotter.modules.facebook != "object")
  * update: true/false depending on whether there are new tweets
  * data: the new tweet objects themselves
  */
-spotter.modules.facebook.search = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.facebook.search = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var searchString = options.q;
     var lastCreatedTime = null;

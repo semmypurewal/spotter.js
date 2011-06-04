@@ -4,19 +4,19 @@
  *
  */
 
-if(!spotter)
-    throw new Error("spotter not yet loaded!");
+if(!spotterjs)
+    throw new Error("spotterjs not yet loaded!");
 
-if(!spotter.util)
-    throw new Error("spotter.util not yet loaded!");
+if(!spotterjs.util)
+    throw new Error("spotterjs.util not yet loaded!");
 
-if(!spotter.modules) spotter.modules = {};
-else if(typeof spotter.modules != "object")
-    throw new Error("spotter.modules is not an object!");
+if(!spotterjs.modules) spotterjs.modules = {};
+else if(typeof spotterjs.modules != "object")
+    throw new Error("spotterjs.modules is not an object!");
 
-if(!spotter.modules.identica) spotter.modules.identica = {};
-else if(typeof spotter.modules.identica != "object")
-    throw new Error("spotter.modules.identica is not an object!");
+if(!spotterjs.modules.identica) spotterjs.modules.identica = {};
+else if(typeof spotterjs.modules.identica != "object")
+    throw new Error("spotterjs.modules.identica is not an object!");
 
 /**
  * Required options: q (searchString)
@@ -29,8 +29,8 @@ else if(typeof spotter.modules.identica != "object")
  *       this should work just like the twitter module.  It may be possible
  *       to merge the two modules somehow.
  */
-spotter.modules.identica.search = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.identica.search = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var refreshURL = "";
     var searchString = options.q;
@@ -69,8 +69,8 @@ spotter.modules.identica.search = function(options)  {
     }
 };
 
-spotter.modules.identica.realtimesearch = function(options)  {
-    spotter.modules.Module.call(this,options);
+spotterjs.modules.identica.realtimesearch = function(options)  {
+    spotterjs.modules.Module.call(this,options);
 
     var searchString = options.q;
     var lastID = 0;  //this is a temporary fix until since_id is properly implemented
