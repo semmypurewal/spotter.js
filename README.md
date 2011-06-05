@@ -1,5 +1,5 @@
 # Spotter
-Spotter is a JSONP polling library designed for browser-based real-time applications and mashups. It lets you easily add twitter (and other) feeds to simple client-side web pages.
+Spotter is a JSONP polling library designed for browser-based real-time applications and mashups. It lets you easily add twitter (and other) feeds to simple client-side web pages.  It is licensed under the MIT-license.
 
 ### Features
 
