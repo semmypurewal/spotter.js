@@ -13,8 +13,6 @@
      * options.  See the specific module documentation for available
      * options.<br/><br/>
      *
-     * TODO: tease out the prototypes to save memory
-     *
      * @constructor
      * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
      * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justin Beiber"}
@@ -22,7 +20,7 @@
      */
     spotterjs.Spotter = function(type, options)  {
 	spotterjs.Spotter.instanceCount = (spotterjs.Spotter.instanceCount === undefined)?1:spotterjs.Spotter.instanceCount+1;
-	var varName =  "so"+spotterjs.Spotter.instanceCount;
+	var varName =  "_so"+spotterjs.Spotter.instanceCount;
 	var spotting = false;
 	var lastCallReturned = true;
 	var lastScriptTag = null;
@@ -57,7 +55,7 @@
          *       the remaining requests are not blocked
          *
          */
-	this.start = function()  {
+	spotterjs.Spotter.prototype.start = function()  {
 	    if(!spotting) spotting = true;
 	    var url;
 	    var obj = this;
@@ -87,7 +85,7 @@
          * @private 
          * @param {Object} rawData Unprocessed data direct from the API
          */
-	this.callback = function(rawData)  {
+	spotterjs.Spotter.prototype.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) notifyObservers(processedData.data);
@@ -97,13 +95,12 @@
 	    lastCallReturned = true;
 	}
 
-
 	/**
          * Stops this spotter if it is currently spotting.
          *
          * @throws Error An error is thrown if you try to stop a stopped spotter
          */
-	this.stop = function()  {
+	spotterjs.Spotter.prototype.stop = function()  {
 	    if(!spotting)  {
 		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
@@ -132,14 +129,13 @@
 	    lastScriptTag = script;
 	}
     
-	/********** OBSERVABLE MIXIN ***************/
 	/**
          * Register an observer with this object
          *
          * @param {Object} observer this object will be notified when new data is available
          * @throws TypeError a TypeError is thrown if the parameter does not implement notify
          */
-	this.register = function(observer) {
+	spotterjs.Spotter.prototype.register = function(observer) {
 	    if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')
 		observers.push(observer);
 	    else if(observer !== undefined && typeof observer === 'function')
@@ -164,41 +160,11 @@
 		    throw new Error("observer list contains an invalid object");
 	    }
 	}
-	/********** END OBSERVABLE MIXIN ***************/
     }//end spotter constructor
 
     /************************************ END SPOTTER ***********************************/
 
-    /************************************ MODULES ***********************************/
 
-    /**
-     * @namespace
-     * The module namespace
-     */
-    spotterjs.modules = {};
-
-    /**
-     * @constructor
-     * The general Module from which everything else inherits
-     *
-     */
-    spotterjs.modules.Module = function(options) {
-	var period;
-	
-	
-	if(options["period"] === undefined)  {
-	    period = 45;
-	}
-	else  {
-	    period = options["period"];
-	}
-
-	this.nextTimeout = function()  {
-	    return period;
-	}
-    }
-
-    /************************************ END MODULES ***********************************/
 
     /************************************ UTILS ***********************************/
 
@@ -249,7 +215,6 @@
      *
      * For now this assumes a trends object
      *
-     * TODO: make private
      * TODO: make more general (for arbitrary arrays)
      * TODO: use the changes algorithm as a subroutine
      *
@@ -266,8 +231,32 @@
 	    counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
 	return [aMinusB,bMinusA];
     }
-
     /************************************ END UTILS ***********************************/
+
+
+    /************************************ MODULES ***********************************/
+    /**
+     * @namespace
+     * The module namespace
+     */
+    spotterjs.modules = {};
+
+    /**
+     * @constructor
+     * The general Module from which everything else inherits
+     */
+    spotterjs.modules.Module = function(options) {
+	var period = options.period || options.timeout || 45;
+	
+	this.nextTimeout = function(t)  {
+	    if(t)  {
+		period = t;
+	    } else  {
+		return period;
+	    }
+	}
+    }
+    /************************************ END MODULES ***********************************/
 
     //namespace shortcut
     window.spotterjs = spotterjs;
