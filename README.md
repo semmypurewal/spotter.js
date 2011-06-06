@@ -25,6 +25,10 @@ That's all there is to it!
 
 ## Documentation
 
+### Build
+
+To build you must have `rake` installed.  At the root directory, just type `rake` and it will build `spotter.js` and `spotter.min.js` in the build directory.
+
 ### Namespace
 
 Spotter adds two items to the global namespace: `spotterjs` (the object that keeps all spotter-related variables) and `Spotter` which is the constructor used to create new spotter objects.
