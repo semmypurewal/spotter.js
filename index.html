@@ -12,7 +12,7 @@ Copyright (C) 2010 Semmy Purewal
   <h2>Spotter</h2>
   <a href="index.html">home</a> <a href="examples">examples</a> <a href="download">download</a> <a href="doc">documentation</a>
 
-<p>Spotter is a JSONP polling library designed for browser-based real-time applications and mashups.  It lets you easily add twitter (and other) feeds to simple client-side web pages.</p>
+<p>Spotter is a JSONP polling library designed for browser-based real-time applications and mashups.  It lets you easily add twitter (and other) JSON feeds to simple client-side web pages.</p>
 
 
 
@@ -21,13 +21,8 @@ Copyright (C) 2010 Semmy Purewal
  <li>Current support for Twitter (search and trends), Flickr (search), and Delicious (recents and tags)</li>
  <li>Completely client-side</li>
  <li>"Real-time" and flexible (although you should consult the Spotter documentation and the API documentation before changing the defaults)</li>
- <li>Extendible via a simple modular design</li>
+ <li>Write your own modules to access your other JSON feeds</li>
 </ul>
-
-<p>Spotter's interface is based on the Observer design pattern.  Observer objects (those that implement
-the notify function) register with a Spotter object and are only notified when the Spotter
-receives new data.  You can also use Spotter to send requests at specified intervals in your
-code.</p>
 
 <p>See the <a href="examples">examples</a> for more detailed code, but -- seriously -- this is all that's necessary:</p>
 
@@ -43,15 +38,6 @@ s.register(function(tweets) {
 s.start(); </tt></pre>
 
 <p>That's all there is to it!</p>
-
-<p>Spotter modules are based on the Strategy design pattern.  To implement one, you build a
-function that returns an object with a 'url' function and a 'process' function.  The url
-function builds the URL associated with the feed (from options sent to the Spotter object via
-the spotterFactory() method).  The process function determines if the feed actually has new
-data and passes the processed data back to the spotter object who returns it to the client.</p>
-
-<p>If you follow the convention of naming your module function spotter.modules.[service-name].[feed] then
-spotter will auto-magically load it if you include it in your Javascript source file!</p>
 
 </ul>
 

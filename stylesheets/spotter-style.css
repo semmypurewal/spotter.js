@@ -15,6 +15,12 @@ li {
   margin-top: 1em;
 }
 
+h3  {
+    background: #eee;
+    padding: 3px;
+
+}
+
 h4  {
   margin: 0px;
 }

@@ -98,3 +98,14 @@ The twitpic module searches twitter for twitpic tweets associated with your sear
 `delicious.recents`: no required options, gets the most recently bookmarked sites
 
 `delicious.tags`: required option is tags which is a series of tags to search for
+
+### Writing Modules
+
+Spotter modules are based on the Strategy design pattern.  To implement one, you build a
+function that returns an object with a 'url' function and a 'process' function.  The url
+function builds the URL associated with the feed (from options sent to the Spotter object via
+the constructor).  The process function determines if the feed actually has new
+data and passes the processed data back to the spotter object who returns it to the client.
+  
+If you follow the convention of naming your module function spotter.[service-name].[feed].js then
+spotter will auto-magically load it if you include it in your Javascript source file!</p>
