@@ -20,23 +20,23 @@
 	throw new Error("spotterjs.modules.twitpic is not an object!");
 
     /**
- * Required options: searchString
- * Other available options: ?
- * callback return format: {update, data}
- *
- * There is no twitpic API, this is a modification of the 
- * twitter search API
- *
- * In addition to the normal twitter API response each object
- * includes the following:
- *
- * twitpic_url
- * twitpic_thumbnail_url
- * twitpic_mini_url
- *
- * update: true/false depending on whether there are new tweets
- * data: the tweet objects themselves
- */
+     * Required options: searchString
+     * Other available options: ?
+     * callback return format: {update, data}
+     *
+     * There is no twitpic API, this is a modification of the 
+     * twitter search API
+     *
+     * In addition to the normal twitter API response each object
+     * includes the following:
+     *
+     * twitpic_url
+     * twitpic_thumbnail_url
+     * twitpic_mini_url
+     *
+     * update: true/false depending on whether there are new tweets
+     * data: the tweet objects themselves
+     */
     spotterjs.modules.twitpic.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
@@ -77,5 +77,5 @@
 	    }
 	    return processedData;
 	}
-    };
+    }
 })(window);

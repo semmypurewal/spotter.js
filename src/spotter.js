@@ -1,6 +1,6 @@
 /**
  * spotter.js
- * Copyright (C) 2010 Semmy Purewal
+ * Copyright (C) 2010-2011 Semmy Purewal
  *
  * @version .2
  */
@@ -11,7 +11,7 @@
     /**
      * Construct a Spotter object of the specified type with the specified
      * options.  See the specific module documentation for available
-     * options.<br/><br/>
+     * options.
      *
      * @constructor
      * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
@@ -45,15 +45,10 @@
 
 
 	/**
-         * Begin spotting.
-         *
-         * @param {Number} seconds optional parameter represeting the number of seconds
-         *        between each request.  If this parameter is not provided, the
-         *        function performs a single request.
+         * Start spotting.
          *
          * TODO: set up a time out so that if the last request doesn't return 
          *       the remaining requests are not blocked
-         *
          */
 	spotterjs.Spotter.prototype.start = function()  {
 	    if(!spotting) spotting = true;
@@ -78,20 +73,18 @@
     
 	/**
          * Receives the response from the ajax request and send it
-         * to the appropriate module for processing.  Removes the
-         * defunct script tag from the DOM.  Notifies observers if
-         * the module determines there is new data.
+         * to the appropriate module for processing.  Notifies
+         * observers if the module determines there is new data.
          *
-         * @private 
          * @param {Object} rawData Unprocessed data direct from the API
          */
 	spotterjs.Spotter.prototype.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
 	    //now the processedData has an 'update' attribute and a 'data' attribute
-	    if(processedData.update) notifyObservers(processedData.data);
-	    
+	    if(processedData.update) {
+		notifyObservers(processedData.data);
+	    }
 	    //here is where we need to set up the next call by getting the delay from the module
-	    
 	    lastCallReturned = true;
 	}
 
@@ -107,7 +100,9 @@
 	    else  {
 		spotting = false;
 		var head = document.getElementsByTagName("head");
-		if(lastScriptTag !== null) head[0].removeChild(lastScriptTag);
+		if(lastScriptTag) {
+		    head[0].removeChild(lastScriptTag);
+		}
 		clearTimeout(timer);
 	    }
 	}
@@ -124,7 +119,9 @@
 	    script.id = varName+'_'+'request';
 	    script.type = 'text/javascript';
 	    script.src = url;
-	    if(lastScriptTag !== null) head[0].removeChild(lastScriptTag);
+	    if(lastScriptTag) {
+		head[0].removeChild(lastScriptTag);
+	    }
 	    head[0].appendChild(script);
 	    lastScriptTag = script;
 	}
@@ -136,12 +133,13 @@
          * @throws TypeError a TypeError is thrown if the parameter does not implement notify
          */
 	spotterjs.Spotter.prototype.register = function(observer) {
-	    if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')
+	    if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')  {
 		observers.push(observer);
-	    else if(observer !== undefined && typeof observer === 'function')
+	    } else if(observer !== undefined && typeof observer === 'function')  {
 		observers.push(observer);
-	    else
+	    } else  {
 		throw new TypeError('Observer must implement a notify method.');
+	    }
 	}
     
 	/**
