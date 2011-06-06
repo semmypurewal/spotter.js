@@ -50,7 +50,7 @@
          * TODO: set up a time out so that if the last request doesn't return 
          *       the remaining requests are not blocked
          */
-	spotterjs.Spotter.prototype.start = function()  {
+	this.start = function()  {
 	    if(!spotting) spotting = true;
 	    var url;
 	    var obj = this;
@@ -78,7 +78,7 @@
          *
          * @param {Object} rawData Unprocessed data direct from the API
          */
-	spotterjs.Spotter.prototype.callback = function(rawData)  {
+	this.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) {
@@ -93,7 +93,7 @@
          *
          * @throws Error An error is thrown if you try to stop a stopped spotter
          */
-	spotterjs.Spotter.prototype.stop = function()  {
+	this.stop = function()  {
 	    if(!spotting)  {
 		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
@@ -132,7 +132,7 @@
          * @param {Object} observer this object will be notified when new data is available
          * @throws TypeError a TypeError is thrown if the parameter does not implement notify
          */
-	spotterjs.Spotter.prototype.register = function(observer) {
+	this.register = function(observer) {
 	    if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')  {
 		observers.push(observer);
 	    } else if(observer !== undefined && typeof observer === 'function')  {
@@ -254,6 +254,32 @@
 	    }
 	}
     }
+    /************************************ END MODULES ***********************************/
+
+    //namespace shortcut
+    window.spotterjs = spotterjs;
+    window.Spotter = spotterjs.Spotter;
+})(window);
+/**
+ * spotter.delicious.js
+ * Copyright (C) 2010 Semmy Purewal
+ *
+ * TODO: implement hotlist feed, should be very easy
+ *
+ */
+
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotterjs not yet loaded!");
+    
+    if(!spotterjs.util)
+	throw new Error("spotterjs.util not yet loaded!");
+
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
+
 
     if(!spotterjs.modules.delicious)
 	spotterjs.modules.delicious = {};
@@ -350,6 +376,94 @@
 	    return array.length;
 	}
     }
+})(window);
+/**
+ * spotter.facebook.js
+ * Copyright (C) 2010 Semmy Purewal
+ *
+ */
+
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotter not yet loaded!");
+    
+    if(!spotterjs.util)
+	throw new Error("spotter.util not yet loaded!");
+
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
+    
+    if(!spotterjs.modules.facebook) spotterjs.modules.facebook = {};
+    else if(typeof spotterjs.modules.facebook != "object")
+	throw new Error("spotterjs.modules.facebook is not an object!");
+
+    /**
+     * Required options: q
+     * Other available options: ?
+     * callback return format: {update, data}
+     * update: true/false depending on whether there are new tweets
+     * data: the new tweet objects themselves
+     */
+    spotterjs.modules.facebook.search = function(options)  {
+	spotterjs.modules.Module.call(this,options);
+	
+	var searchString = options.q;
+	var lastCreatedTime = null;
+	var i;
+	
+	if(searchString === undefined || searchString === "")
+	    throw new Error("facebook search module requires a search string (q) to be specified as an option");
+	
+	this.url = function()  {
+	    var url = 'http://graph.facebook.com/search'
+	    url += '?q='+escape(searchString);
+	    return url;
+	}
+
+	this.process = function(rawData)  {
+	    var processedData = {};
+
+	    //alert(lastCreatedTime);
+
+	    processedData.data = [];
+	    //filter the data
+	    for(i in rawData.data)  {
+		if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime) && rawData.data[i].type === 'status')  {
+		    rawData.data[i].profile_image_url = "http://graph.facebook.com/"+rawData.data[i].from.id+"/picture";
+		    rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
+		    processedData.data.push(rawData.data[i]);
+		}
+		else  {
+		    //alert("filtered:"+rawData.data.results[i].text);
+		}
+	    }
+
+
+	    lastCreatedTime = rawData.data[0]['created_time'];
+
+	    processedData.update = (processedData.data.length>0)?true:false;
+
+	    return processedData;;
+	}
+    }
+})(window);
+/**
+ * spotter.flickr.js
+ * Copyright (C) 2010 Semmy Purewal
+ *
+ *
+ */
+
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotter not yet loaded!");
+
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
 
     if(!spotterjs.modules.flickr) spotterjs.modules.flickr = {};
     else if(typeof spotterjs.modules.flickr != "object")
@@ -435,7 +549,225 @@
 	    return processedData;
 	}
     }
+})(window);
+/**
+ * spotter.identica.js
+ * Copyright (C) 2010 Semmy Purewal
+ *
+ */
 
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotterjs not yet loaded!");
+
+    if(!spotterjs.util)
+	throw new Error("spotterjs.util not yet loaded!");
+
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
+
+    if(!spotterjs.modules.identica) spotterjs.modules.identica = {};
+    else if(typeof spotterjs.modules.identica != "object")
+	throw new Error("spotterjs.modules.identica is not an object!");
+
+    /**
+     * Required options: q (searchString)
+     * Other available options: ?
+     * callback return format: {update, data}
+     * update: true/false depending on whether there are new tweets
+     * data: the tweet objects themselves
+     *
+     * TODO: Once statusnet completely implements its Twitter Compatible API
+     *       this should work just like the twitter module.  It may be possible
+     *       to merge the two modules somehow.
+     */
+    spotterjs.modules.identica.search = function(options)  {
+	spotterjs.modules.Module.call(this,options);
+
+	var refreshURL = "";
+	var searchString = options.q;
+	
+	
+	var lastID = 0;  //this is a temporary fix until since_id is properly implemented
+	
+	if(searchString === undefined || searchString === "")
+	    throw new Error("identica search module requires a search string (q) to be specified as an option");
+
+	this.url = function()  {
+	    var url = 'http://identi.ca/api/search.json';
+	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
+	    return url;
+	}
+
+	this.process = function(rawData)  {
+	    var processedData = {};
+	    var i;
+	    
+	    processedData.data = [];
+	    refreshURL = rawData.refresh_url;
+	    
+	    if(rawData.results.length>0)  {
+		processedData.update = true;
+		for(i = 0; i < rawData.results.length && rawData.results[i].id > lastID; ++i)  {
+		    processedData.data.unshift(rawData.results[i]);
+		}
+		lastID = rawData.results[0].id;
+	    }
+	    else  {
+		processedData.update = false;
+	    }
+	    
+	    return processedData;;
+	}
+    };
+
+    spotterjs.modules.identica.realtimesearch = function(options)  {
+	spotterjs.modules.Module.call(this,options);
+	
+	var searchString = options.q;
+	var lastID = 0;  //this is a temporary fix until since_id is properly implemented
+	var currentCount=1000;
+	var counts = [0,0,currentCount];
+	
+	if(searchString === undefined || searchString === "")
+	    throw new Error("identica search module requires searchString to be specified as an option");
+	
+	this.url = function()  {
+	    var url = 'http://identi.ca/api/statuses/public_timeline.json?count='+currentCount;
+	    return url;
+	}
+
+	this.process = function(rawData)  {
+	    var processedData = {};
+	    var i;
+	    
+	    if(lastID > 0)  {
+		counts.push(rawData[0].id-lastID);
+		counts.shift();
+		currentCount = Math.ceil((counts[0]+counts[1]+counts[2])/3)+10;
+	    }
+	    
+	    processedData.data = [];
+
+	    if(rawData.length>0)  {
+		for(i = 0; i < rawData.length && rawData[i].id > lastID; ++i)  {
+		    if(rawData[i].text.match(new RegExp(searchString,"i")))  {
+			processedData.data.unshift(rawData[i]);
+		    }
+		}
+		lastID = rawData[0].id;
+		processedData.update = processedData.data.length===0?false:true;
+	    }
+	    else  {
+		processedData.update = false;
+	    }
+	    return processedData;;
+	}
+    }
+})(window);
+/**
+ * spotter.twitpic.js
+ * Copyright (C) 2010 Semmy Purewal
+ */
+
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotterjs not yet loaded!");
+
+    if(!spotterjs.util)
+	throw new Error("spotterjs.util not yet loaded!");
+
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
+
+    if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
+    else if(typeof spotterjs.modules.twitpic != "object")
+	throw new Error("spotterjs.modules.twitpic is not an object!");
+
+    /**
+     * Required options: searchString
+     * Other available options: ?
+     * callback return format: {update, data}
+     *
+     * There is no twitpic API, this is a modification of the 
+     * twitter search API
+     *
+     * In addition to the normal twitter API response each object
+     * includes the following:
+     *
+     * twitpic_url
+     * twitpic_thumbnail_url
+     * twitpic_mini_url
+     *
+     * update: true/false depending on whether there are new tweets
+     * data: the tweet objects themselves
+     */
+    spotterjs.modules.twitpic.search = function(options)  {
+	spotterjs.modules.Module.call(this,options);
+
+	var refreshURL = "";
+	var searchString = options.q;
+	
+	if(searchString === undefined || searchString === "")
+	    throw new Error("twitpic search module requires a search string (q) to be specified as an option");
+
+	this.url = function()  {
+	    var url = 'http://search.twitter.com/search.json'
+	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
+	    return url;
+	}
+
+	this.process = function(rawData)  {
+	    var processedData = {};
+	    var i;
+	    var rematch;
+	    var twitpic_id;
+	    refreshURL = rawData.refresh_url || "";
+	    processedData.update = (rawData.results.length>0)?true:false;
+	    
+	    //process rawData and put it in processedData
+	    processedData.data = [];
+	    for(i in rawData.results)  {
+		//put the processed version of the raw data in the 
+		//processed data array
+		rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
+		if(rematch!== null && !rawData.results[i].text.match(new RegExp("^RT")))  {  //ignore retweets
+		    twitpic_id = rematch[1];
+		    rawData.results[i].twitpic_url = "http://twitpic.com/"+twitpic_id;
+		    rawData.results[i].twitpic_full_url = "http://twitpic.com/show/full/"+twitpic_id;
+		    rawData.results[i].twitpic_thumb_url = "http://twitpic.com/show/thumb/"+twitpic_id;
+		    rawData.results[i].twitpic_mini_url = "http://twitpic.com/show/mini/"+twitpic_id;
+		    processedData.data.push(rawData.results[i]);
+		}
+	    }
+	    return processedData;
+	}
+    }
+})(window);
+/**
+ * spotter.twitter.js
+ * Copyright (C) 2010 Semmy Purewal
+ *
+ * TODO: test trend module more carefully
+ *
+ */
+
+(function(window)  {
+
+    if(!spotterjs)
+	throw new Error("spotterjs not yet loaded!");
+    
+    if(!spotterjs.util)
+	throw new Error("spotterjs.util not yet loaded!");
+    
+    if(!spotterjs.modules) spotterjs.modules = {};
+    else if(typeof spotterjs.modules != "object")
+	throw new Error("spotterjs.modules is not an object!");
+    
     if(!spotterjs.modules.twitter) spotterjs.modules.twitter = {};
     else if(typeof spotterjs.modules.twitter != "object")
 	throw new Error("spotterjs.modules.twitter is not an object!");
@@ -544,127 +876,4 @@
 	    return processedData;
 	}
     }
-
-    if(!spotterjs.modules.facebook) spotterjs.modules.facebook = {};
-    else if(typeof spotterjs.modules.facebook != "object")
-	throw new Error("spotterjs.modules.facebook is not an object!");
-
-    /**
-     * Required options: q
-     * Other available options: ?
-     * callback return format: {update, data}
-     * update: true/false depending on whether there are new tweets
-     * data: the new tweet objects themselves
-     */
-    spotterjs.modules.facebook.search = function(options)  {
-	spotterjs.modules.Module.call(this,options);
-	
-	var searchString = options.q;
-	var lastCreatedTime = null;
-	var i;
-	
-	if(searchString === undefined || searchString === "")
-	    throw new Error("facebook search module requires a search string (q) to be specified as an option");
-	
-	this.url = function()  {
-	    var url = 'http://graph.facebook.com/search'
-	    url += '?q='+escape(searchString);
-	    return url;
-	}
-
-	this.process = function(rawData)  {
-	    var processedData = {};
-
-	    //alert(lastCreatedTime);
-
-	    processedData.data = [];
-	    //filter the data
-	    for(i in rawData.data)  {
-		if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime) && rawData.data[i].type === 'status')  {
-		    rawData.data[i].profile_image_url = "http://graph.facebook.com/"+rawData.data[i].from.id+"/picture";
-		    rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
-		    processedData.data.push(rawData.data[i]);
-		}
-		else  {
-		    //alert("filtered:"+rawData.data.results[i].text);
-		}
-	    }
-
-
-	    lastCreatedTime = rawData.data[0]['created_time'];
-
-	    processedData.update = (processedData.data.length>0)?true:false;
-
-	    return processedData;;
-	}
-    }
-
-    if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
-    else if(typeof spotterjs.modules.twitpic != "object")
-	throw new Error("spotterjs.modules.twitpic is not an object!");
-
-    /**
-     * Required options: searchString
-     * Other available options: ?
-     * callback return format: {update, data}
-     *
-     * There is no twitpic API, this is a modification of the 
-     * twitter search API
-     *
-     * In addition to the normal twitter API response each object
-     * includes the following:
-     *
-     * twitpic_url
-     * twitpic_thumbnail_url
-     * twitpic_mini_url
-     *
-     * update: true/false depending on whether there are new tweets
-     * data: the tweet objects themselves
-     */
-    spotterjs.modules.twitpic.search = function(options)  {
-	spotterjs.modules.Module.call(this,options);
-
-	var refreshURL = "";
-	var searchString = options.q;
-	
-	if(searchString === undefined || searchString === "")
-	    throw new Error("twitpic search module requires a search string (q) to be specified as an option");
-
-	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
-	    return url;
-	}
-
-	this.process = function(rawData)  {
-	    var processedData = {};
-	    var i;
-	    var rematch;
-	    var twitpic_id;
-	    refreshURL = rawData.refresh_url || "";
-	    processedData.update = (rawData.results.length>0)?true:false;
-	    
-	    //process rawData and put it in processedData
-	    processedData.data = [];
-	    for(i in rawData.results)  {
-		//put the processed version of the raw data in the 
-		//processed data array
-		rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
-		if(rematch!== null && !rawData.results[i].text.match(new RegExp("^RT")))  {  //ignore retweets
-		    twitpic_id = rematch[1];
-		    rawData.results[i].twitpic_url = "http://twitpic.com/"+twitpic_id;
-		    rawData.results[i].twitpic_full_url = "http://twitpic.com/show/full/"+twitpic_id;
-		    rawData.results[i].twitpic_thumb_url = "http://twitpic.com/show/thumb/"+twitpic_id;
-		    rawData.results[i].twitpic_mini_url = "http://twitpic.com/show/mini/"+twitpic_id;
-		    processedData.data.push(rawData.results[i]);
-		}
-	    }
-	    return processedData;
-	}
-    }
-    /************************************ END MODULES ***********************************/
-
-    //namespace shortcut
-    window.spotterjs = spotterjs;
-    window.Spotter = spotterjs.Spotter;
 })(window);

@@ -50,7 +50,7 @@
          * TODO: set up a time out so that if the last request doesn't return 
          *       the remaining requests are not blocked
          */
-	spotterjs.Spotter.prototype.start = function()  {
+	this.start = function()  {
 	    if(!spotting) spotting = true;
 	    var url;
 	    var obj = this;
@@ -78,7 +78,7 @@
          *
          * @param {Object} rawData Unprocessed data direct from the API
          */
-	spotterjs.Spotter.prototype.callback = function(rawData)  {
+	this.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) {
@@ -93,7 +93,7 @@
          *
          * @throws Error An error is thrown if you try to stop a stopped spotter
          */
-	spotterjs.Spotter.prototype.stop = function()  {
+	this.stop = function()  {
 	    if(!spotting)  {
 		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
@@ -132,7 +132,7 @@
          * @param {Object} observer this object will be notified when new data is available
          * @throws TypeError a TypeError is thrown if the parameter does not implement notify
          */
-	spotterjs.Spotter.prototype.register = function(observer) {
+	this.register = function(observer) {
 	    if(observer !== undefined && observer.notify !== undefined && typeof observer.notify === 'function')  {
 		observers.push(observer);
 	    } else if(observer !== undefined && typeof observer === 'function')  {
