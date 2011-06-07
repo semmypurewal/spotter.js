@@ -244,8 +244,15 @@
      * The general Module from which everything else inherits
      */
     spotterjs.modules.Module = function(options) {
-	var period = options.period || options.timeout || 45;
-	
+	//var period = options.period || options.timeout || 45;
+	var period;
+	if(options.period !== undefined && typeof(options.period) === "number")  {
+	    period = options.period;
+	}  else  {
+	    period = 45;
+	}
+
+	alert(period);
 	this.nextTimeout = function(t)  {
 	    if(t)  {
 		period = t;
