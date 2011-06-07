@@ -27,11 +27,11 @@ end
 # minifies spotter using yui compressor, depends on having java installed
 task :minify => :build do
   puts "building spotter.min.js"
-  minified_code = `java -jar support/yuicompressor-2.4.6/yuicompressor-2.4.6.jar build/spotter.js > build/spotter.min.js`
+  `java -jar support/yuicompressor-2.4.6/yuicompressor-2.4.6.jar build/spotter.js > build/spotter.min.js`
 end
 
 # release
-# release increments the version number
+# adds latest build to release folder and increments the version number
 task :release => [:build, :minify] do
   new_version = ''
   new_filename = ''
