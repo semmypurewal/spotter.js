@@ -27,6 +27,10 @@
 	var observers = [];
 	var timer = null;
 	var module;
+	var buffer = [];
+	var isBuffered;
+	var bufferTimer;
+
 	
 	window["spotterjs"][varName] = this;
 	
@@ -45,13 +49,11 @@
 
 
 	/**
-         * Start spotting.
+         * A single spot request
          *
-         * TODO: set up a time out so that if the last request doesn't return 
-         *       the remaining requests are not blocked
+         * @private
          */
-	this.start = function()  {
-	    if(!spotting) spotting = true;
+	var spot = function()  {
 	    var url;
 	    var obj = this;
 	    
@@ -67,10 +69,28 @@
 		request(url);
 	    }
 	    if(module.nextTimeout() > 0)  {
-		timer = setTimeout(function() { obj.start(); }, module.nextTimeout()*1000);
+		alert(module.nextTimeout());
+		timer = setTimeout(spot, module.nextTimeout()*1000);
+	    } else  {
+		this.stop();
 	    }
 	}
-    
+
+	/**
+         * Start spotting.
+         *
+         * TODO: set up a time out so that if the last request doesn't return 
+         *       the remaining requests are not blocked
+         */
+	this.start = function()  {
+	    if(!spotting) { 
+		spotting = true;
+		spot();
+	    }  else  {
+		throw new Error("Spotter: You can't start a spotter that is already running!");
+	    }
+	}
+
 	/**
          * Receives the response from the ajax request and send it
          * to the appropriate module for processing.  Notifies
@@ -80,9 +100,16 @@
          */
 	this.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
+	    var i;
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) {
-		notifyObservers(processedData.data);
+		if(!isBuffered)  {
+		    notifyObservers(processedData.data);
+		} else  {
+		    for(i = 0; i < processedData.length; i++)  {
+			buffer.push(processedData.data[i]);
+		    }
+		}
 	    }
 	    //here is where we need to set up the next call by getting the delay from the module
 	    lastCallReturned = true;
@@ -94,6 +121,7 @@
          * @throws Error An error is thrown if you try to stop a stopped spotter
          */
 	this.stop = function()  {
+	    alert("stop called");
 	    if(!spotting)  {
 		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
@@ -244,10 +272,14 @@
      * The general Module from which everything else inherits
      */
     spotterjs.modules.Module = function(options) {
-	var period = options.period || options.timeout || 45;
-	
+	if(options.period !== undefined && typeof(options.period)==="number")  {
+	    period = options.period;
+	    period = 45;
+	}  else  {
+	    period = 45;
+	}
 	this.nextTimeout = function(t)  {
-	    if(t)  {
+	    if(t !== undefined)  {
 		period = t;
 	    } else  {
 		return period;
