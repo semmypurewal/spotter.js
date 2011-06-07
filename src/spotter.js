@@ -68,12 +68,6 @@
 		url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 		request(url);
 	    }
-	    if(module.nextTimeout() > 0)  {
-		alert(module.nextTimeout());
-		timer = setTimeout(spot, module.nextTimeout()*1000);
-	    } else  {
-		this.stop();
-	    }
 	}
 
 	/**
@@ -92,6 +86,21 @@
 	}
 
 	/**
+         * Start spotting.
+         *
+         * TODO: set up a time out so that if the last request doesn't return 
+         *       the remaining requests are not blocked
+         */
+	this.bufferStart = function()  {
+	    isBuffered = true;
+	    this.start();
+	}
+
+
+
+
+
+	/**
          * Receives the response from the ajax request and send it
          * to the appropriate module for processing.  Notifies
          * observers if the module determines there is new data.
@@ -106,13 +115,21 @@
 		if(!isBuffered)  {
 		    notifyObservers(processedData.data);
 		} else  {
-		    for(i = 0; i < processedData.length; i++)  {
+		    for(i=0; i < processedData.data.length; i++)  {
 			buffer.push(processedData.data[i]);
+		    }
+		    if(!bufferTimer)  {
+			bufferedNotifyObservers();
 		    }
 		}
 	    }
-	    //here is where we need to set up the next call by getting the delay from the module
 	    lastCallReturned = true;
+	    if(module.nextTimeout() > 0)  {
+		timer = setTimeout(spot, module.nextTimeout()*1000);
+	    }
+	    else  {
+		this.stop();
+	    }
 	}
 
 	/**
@@ -121,7 +138,6 @@
          * @throws Error An error is thrown if you try to stop a stopped spotter
          */
 	this.stop = function()  {
-	    alert("stop called");
 	    if(!spotting)  {
 		throw new Error("Spotter: You can't stop a stopped spotter!");
 	    }
@@ -186,7 +202,21 @@
 		    throw new Error("observer list contains an invalid object");
 	    }
 	}
+
+
+	var bufferedNotifyObservers = function()  {
+	    if(buffer.length > 0)  {
+		bufferTimer = setTimeout(function()  {
+		    notifyObservers(buffer.pop());
+		    bufferedNotifyObservers();
+		}, 2000);
+	    } else  {
+		clearTimeout(bufferTimer);
+		bufferTimer = false;
+	    }
+	}
     }//end spotter constructor
+
 
     /************************************ END SPOTTER ***********************************/
 
@@ -243,7 +273,6 @@
      *
      * TODO: make more general (for arbitrary arrays)
      * TODO: use the changes algorithm as a subroutine
-     *
      */
     spotterjs.util.complements = function(a, b)  {
 	var counts = new Object();
@@ -274,7 +303,6 @@
     spotterjs.modules.Module = function(options) {
 	if(options.period !== undefined && typeof(options.period)==="number")  {
 	    period = options.period;
-	    period = 45;
 	}  else  {
 	    period = 45;
 	}
