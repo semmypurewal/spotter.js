@@ -37,11 +37,11 @@
 	if(!spotterjs.modules[type.split(".")[0]] || !spotterjs.modules[type.split(".")[0]][type.split(".")[1]])  {
 	    throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
 	}
-	
+
 	try  {
 	    module = new (window.spotterjs.modules[type.split(".")[0]][type.split(".")[1]])(options);
 	} catch(e)  {
-	    throw new Error(e);
+	    throw new Error("problem creating "+type+" module -- "+e);
 	}
 	
 	if(!module.url || !module.process)  {
@@ -313,6 +313,8 @@
 	}
 	return [aMinusB,bMinusA];
     };
+
+
     /************************************ END UTILS ***********************************/
 
 
@@ -342,8 +344,38 @@
 		return period;
 	    }
 	};
+
+	this.verifyOptions = function(required, opts) {
+	    var i;
+	    for(i = 0; i < required.length; i++)  {
+		if(opts[required[i]] === undefined || opts[required[i]] === "")  {
+		    throw new Error("this module requires nonempty option "+required[i]);
+		}
+	    }
+	};
     };
+
+
     /************************************ END MODULES ***********************************/
+
+
+    spotterjs.verify = function(items)  {
+	var i;
+	for(i = 0; i < items.length; i++)  {
+	    if(!spotterjs[items[i]] || (typeof spotterjs[items[i]] !== "object" && typeof spotterjs[items[i]] !== "function"))  {
+		throw new Error(items[i]+" not loaded.  Make sure you load spotter.js before loading any modules.");
+	    }
+	}
+    };
+    
+    spotterjs.namespace = function(name)  {
+	if(!spotterjs.modules[name]) {
+	    spotterjs.modules[name] = {};
+	    return spotterjs.modules[name];
+	} else if(typeof spotterjs.modules[name] !== "object")  {
+	    throw new Error("spotterjs.modules." + name +" is not an object!");
+	}
+    };
 
     //namespace shortcuts
     window.spotterjs = spotterjs;

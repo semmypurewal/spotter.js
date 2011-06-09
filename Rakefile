@@ -11,7 +11,7 @@ task :build do
       end
     end
     Dir.open('src/') do |d|
-      d.select { |file| file.match /spotter\..+\.js$/ }.each  { |m|
+      d.select { |file| file.match /^spotter\..+\.js$/ }.each  { |m|
         File.open('src/'+m, 'r') do |file|
             while line = file.gets
               f.puts line

@@ -6,37 +6,23 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
-
-    if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
-    }
     
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
-    
-    if(!spotterjs.modules)  {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules !== "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-    
-    if(!spotterjs.modules.twitter) {
-	spotterjs.modules.twitter = {};
-    } else if(typeof spotterjs.modules.twitter !== "object")  {
-	throw new Error("spotterjs.modules.twitter is not an object!");
-    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
     /**
      * Required options: q
      * Other available options: ?
      * callback return format: {update, data}
      * update: true/false depending on whether there are new tweets
-     * data: the new tweet objects themselves
+     * data: the new tweet objects themselves (if any)
      */
-    spotterjs.modules.twitter.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var refreshURL = "";
@@ -45,11 +31,10 @@
 	var lang = options.lang;
 	var i;
 	var excludeREString = "";
-	
-	if(searchString === undefined || searchString === "")  {
-	    throw new Error("twitter search module requires a search string (q) to be specified as an option");
-	}
+	var base = "";
 
+	this.verifyOptions(['q'], options);
+	
 	if(exclude !== undefined)  {
 	    for(i=0;i < exclude.length; i++)  {
 		if(exclude[i] === "twitpic"||
@@ -62,14 +47,23 @@
 	    }
 	}
 
+	this.base = function(b)  {
+	    if(b && typeof b === "string")  {
+		base = b;
+	    }
+	    else  {
+		return base;
+	    }
+	};
+	this.base('http://search.twitter.com/search.json');
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json';
+	    var url = this.base();
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;
 	};
-
+	
 	this.process = function(rawData)  {
 	    var processedData = {};
 	    refreshURL = rawData.refresh_url || "";
@@ -79,16 +73,11 @@
 	    }
 	    else  {
 		processedData.data = [];
-		//create re
-		
 		var excludeRE = new RegExp(excludeREString);
 		//filter the data
 		for(i in rawData.results)  {
 		    if(rawData.results[i].text.match(excludeRE) === null)  {
 			processedData.data.push(rawData.results[i]);
-		    }
-		    else  {
-			//alert("filtered:"+rawData.results[i].text);
 		    }
 		}
 	    }
@@ -108,7 +97,7 @@
      * removed: removed trends since the last call
      * trends: all trends
      */
-    spotterjs.modules.twitter.trends = function(options)  {
+    ns.trends = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var lastTrends;
@@ -136,4 +125,4 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "twitter");
