@@ -357,58 +357,69 @@
  */
 
 (function(window)  {
-
-    if(!spotterjs)
+    var spotterjs = window.spotterjs;
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules)  {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-
-    if(!spotterjs.modules.delicious)
+    if(!spotterjs.modules.delicious)  {
 	spotterjs.modules.delicious = {};
-    else if(typeof spotterjs.modules.delicious != "object")
+    } else if(typeof spotterjs.modules.delicious != "object")  {
 	throw new Error("spotterjs.modules.delicious is not an object!");
+    }
 
 
     spotterjs.modules.delicious.recent = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
+	var find = function (item, array)  {
+	    for(var i = 0; i < array.length; ++i)  {
+		if(array[i].u === item.u) {
+		    return i;
+		}
+	    }
+	    return array.length;
+	};
+
 	var lastTop;
 	this.url = function()  {
 	    var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
 	    return url;
-	}
+	};
 
 	this.process = function(data)  {
 	    var processedData = {};
+	    var pops;
 	    if(lastTop === undefined)  {
 		lastTop = data[0];
 		processedData = {data:data, update:true};
 	    }
-	    else if(lastTop["u"] === data[0]["u"])  {
+	    else if(lastTop.u === data[0].u)  {
 		processedData = {data:data, update:false};
 	    }
 	    else  {
 		pops = data.length - find(lastTop, data);
-		for(var i = 0; i < pops; i++) data.pop();
+		for(var i = 0; i < pops; i++) {
+		    data.pop();
+		}
 		processedData = {data:data, update:true};
 		lastTop = data[0];
 	    }
 	    return processedData;
-	}
+	};
+	
 
-	var find = function (item, array)  {
-	    for(var i = 0; i < array.length; ++i)  {
-		if(array[i]["u"] === item["u"]) return i;
-	    }
-	    return array.length;
-	}
-    }//end recent module
+    }; //end recent module
 
     /**
      * Required options: tags
@@ -424,15 +435,25 @@
 	
 	var tags = options.tags;
 	
-	if(tags === undefined || tags === "")
+	if(tags === undefined || tags === "")  {
 	    throw new Error("delicious tags module requires tags to be specified as an option");	
+	}
 	
 	var lastTop;
+
+	var find = function (item, array)  {
+	    for(var i = 0; i < array.length; ++i)  {
+		if(array[i].u === item.u) { 
+		    return i;
+		}
+	    }
+	    return array.length;
+	};
 
 	this.url = function()  {
 	    var url = 'http://feeds.delicious.com/v2/json/tag/'+tags+'?count=100';
 	    return url;
-	}
+	};
 	
 	/**
          * process delicious data
@@ -441,51 +462,57 @@
          */
 	this.process = function(data)  {
 	    var processedData = {};
+	    var pops;
 	    if(lastTop === undefined)  {
 		lastTop = data[0];
 		processedData = {data:data, update:true};
 	    }
-	    else if(lastTop["u"] === data[0]["u"])  {
+	    else if(lastTop.u === data[0].u)  {
 		processedData = {data:data, update:false};
 	    }
 	    else  {
 		pops = data.length - find(lastTop, data);
-		for(var i = 0; i < pops; i++) data.pop();
+		for(var i = 0; i < pops; i++) {
+		    data.pop();
+		}
 		processedData = {data:data, update:true};
 		lastTop = data[0];
 	    }
 	    return processedData;
-	}
+	};
 	
-	var find = function (item, array)  {
-	    for(var i = 0; i < array.length; ++i)  {
-		if(array[i]["u"] === item["u"]) return i;
-	    }
-	    return array.length;
-	}
-    }
+
+    };
 })(window);
 /**
  * spotter.facebook.js
- * Copyright (C) 2010 Semmy Purewal
- *
+ * Copyright (C) 2010-2011 Semmy Purewal
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotter.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
-	throw new Error("spotterjs.modules is not an object!");
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else {
+	if(typeof spotterjs.modules != "object")  {
+	    throw new Error("spotterjs.modules is not an object!");
+	}
+    }
     
-    if(!spotterjs.modules.facebook) spotterjs.modules.facebook = {};
-    else if(typeof spotterjs.modules.facebook != "object")
+    if(!spotterjs.modules.facebook) { 
+	spotterjs.modules.facebook = {};
+    } else if(typeof spotterjs.modules.facebook != "object")  {
 	throw new Error("spotterjs.modules.facebook is not an object!");
+    }
 
     /**
      * Required options: q
@@ -501,19 +528,18 @@
 	var lastCreatedTime = null;
 	var i;
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("facebook search module requires a search string (q) to be specified as an option");
+	}
 	
 	this.url = function()  {
-	    var url = 'http://graph.facebook.com/search'
+	    var url = 'http://graph.facebook.com/search';
 	    url += '?q='+escape(searchString);
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
-
-	    //alert(lastCreatedTime);
 
 	    processedData.data = [];
 	    //filter the data
@@ -523,19 +549,15 @@
 		    rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
 		    processedData.data.push(rawData.data[i]);
 		}
-		else  {
-		    //alert("filtered:"+rawData.data.results[i].text);
-		}
 	    }
 
-
-	    lastCreatedTime = rawData.data[0]['created_time'];
+	    lastCreatedTime = rawData.data[0].created_time;
 
 	    processedData.update = (processedData.data.length>0)?true:false;
 
-	    return processedData;;
-	}
-    }
+	    return processedData;
+	};
+    };
 })(window);
 /**
  * spotter.flickr.js
@@ -545,37 +567,56 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+
+    if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules !== "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.flickr) spotterjs.modules.flickr = {};
-    else if(typeof spotterjs.modules.flickr != "object")
+    if(!spotterjs.modules.flickr) { 
+	spotterjs.modules.flickr = {};
+    } else if(typeof spotterjs.modules.flickr !== "object")  {
 	throw new Error("spotterjs.modules.flickr is not an object!");
+    }
 
     spotterjs.modules.flickr.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
-	
-	if(options == undefined || options.api_key == undefined || (options.q == undefined && options.tags == undefined))
+
+	if(options === undefined || options.api_key === undefined || (options.q === undefined && options.tags === undefined))  {
 	    throw new Error("flickr search module requires an api_key and a search string (q) or tags to be defined as an option");
+	}
 
 	var api_key = options.api_key;
 	var searchString = options.q;
 	var tags = options.tags;
 	
 	var lastTop = {id:-1};  //stupid hack
+
+	/** private method that builds a photo URL from a photo object **/
+	var buildPhotoURL = function(photo)  {
+	    var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
+	    return u;
+	};
+
 	
 	this.url = function()  {
 	    var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
 	    url += '&api_key='+api_key+'&format=json&content_type=1';
-	    if(tags != undefined) url+= '&tags='+escape(tags);
-	    if(searchString != undefined) url+= '&text='+escape(searchString);
+	    if(tags !== undefined) { 
+		url+= '&tags='+escape(tags);
+	    }
+	    if(searchString !== undefined) {
+		url+= '&text='+escape(searchString);
+	    }
 	    return {url:url, callbackParam:"jsoncallback"};
-	}
+	};
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -594,14 +635,10 @@
 	    
 	    processedData.update = (processedData.data.length>0)?true:false;	
 	    return processedData;
-	}
+	};
 
-	/** private method that builds a photo URL from a photo object **/
-	var buildPhotoURL = function(photo)  {
-	    var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
-	    return u;
-	}
-    }
+
+    };
 
     spotterjs.modules.flickr.feeds = function(options)  {
 	spotterjs.modules.Module.call(this,options);
@@ -612,9 +649,11 @@
 
 	this.url = function()  {
 	    var url = 'http://api.flickr.com/services/feeds/photos_public.gne?format=json';
-	    if(tags !== null) url+= '&tags='+escape(tags);
+	    if(tags !== null) {
+		url+= '&tags='+escape(tags);
+	    }
 	    return {url:url, callbackParam:"jsoncallback"};
-	}
+	};
     
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -626,7 +665,7 @@
 		photos[i].url = photos[i].media.m.replace("_m","");
 		photos[i].user_url = "http://www.flickr.com/"+photos[i].author_id;
 		photos[i].photo_url = photos[i].link;
-		if(photos[i].author.match(/\(([^\)]*)\)/) === null) alert(photos[i].author);
+		//if(photos[i].author.match(/\(([^\)]*)\)/) === null) alert(photos[i].author);
 		photos[i].user_id = photos[i].author.match(/\(([^\)]*)\)/)[1];
 		processedData.data.push(photos[i]);
 	    }
@@ -635,8 +674,8 @@
 	    
 	    processedData.update = (processedData.data.length>0)?true:false;	
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
 /**
  * spotter.identica.js
