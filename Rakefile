@@ -30,6 +30,13 @@ task :minify => :build do
   `java -jar support/yuicompressor-2.4.6/yuicompressor-2.4.6.jar build/spotter.js > build/spotter.min.js`
 end
 
+# lint
+# runs jslint
+task :lint do
+  puts "running jslint"
+  `support/jslint/jslint --passfail --browser --laxbreak src/spotter.js`
+end
+
 # release
 # adds latest build to release folder and increments the version number
 task :release => [:build, :minify] do

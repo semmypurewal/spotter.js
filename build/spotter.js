@@ -32,13 +32,14 @@
 	var bufferTimer;
 
 	
-	window["spotterjs"][varName] = this;
+	window.spotterjs[varName] = this;
 	
-	if(!spotterjs.modules[type.split(".")[0]] || !spotterjs.modules[type.split(".")[0]][type.split(".")[1]])
+	if(!spotterjs.modules[type.split(".")[0]] || !spotterjs.modules[type.split(".")[0]][type.split(".")[1]])  {
 	    throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
+	}
 	
 	try  {
-	    module = new (window["spotterjs"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
+	    module = new (window.spotterjs.modules[type.split(".")[0]][type.split(".")[1]])(options);
 	} catch(e)  {
 	    throw new Error(e);
 	}
@@ -47,6 +48,60 @@
 	    throw new Error("Spotter: spotterjs.modules."+type+" is invalid.  (Does it return an object with url and process methods?)");
 	}
 
+
+	/**
+         * Function that actually makes the request.
+         *
+         * @private
+         * @param {String} url the json request URL
+         */
+	var request = function(url)  {
+	    var head = document.getElementsByTagName("head");
+	    var script = document.createElement('script');
+	    script.id = varName+'_'+'request';
+	    script.type = 'text/javascript';
+	    script.src = url;
+	    if(lastScriptTag) {
+		head[0].removeChild(lastScriptTag);
+	    }
+	    head[0].appendChild(script);
+	    lastScriptTag = script;
+	};
+
+	/**
+         * Notify this Observable's observers
+         *
+         * @private
+         * @param {Object} data that will be sent to the observers
+         */
+	var notifyObservers = function(data)  {
+	    for(var i in observers)  {
+		if(typeof observers[i] === 'object')  {
+		    observers[i].notify(data);
+		}  else if(typeof observers[i] === 'function')  {
+		    observers[i](data);
+		}  else  {
+		    throw new Error("observer list contains an invalid object");
+		}
+	    }
+	};
+
+	/**
+         * Notify this Observable's observers in a buffered manner
+         *
+         * @private
+         */
+	var bufferedNotifyObservers = function()  {
+	    if(buffer.length > 0)  {
+		bufferTimer = setTimeout(function()  {
+		    notifyObservers(buffer.pop());
+		    bufferedNotifyObservers();
+		}, 2000);
+	    } else  {
+		clearTimeout(bufferTimer);
+		bufferTimer = false;
+	    }
+	};
 
 	/**
          * A single spot request
@@ -68,7 +123,7 @@
 		url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 		request(url);
 	    }
-	}
+	};
 
 	/**
          * Start spotting.
@@ -83,7 +138,7 @@
 	    }  else  {
 		throw new Error("Spotter: You can't start a spotter that is already running!");
 	    }
-	}
+	};
 
 	/**
          * Start spotting.
@@ -94,11 +149,7 @@
 	this.bufferStart = function()  {
 	    isBuffered = true;
 	    this.start();
-	}
-
-
-
-
+	};
 
 	/**
          * Receives the response from the ajax request and send it
@@ -130,7 +181,7 @@
 	    else  {
 		this.stop();
 	    }
-	}
+	};
 
 	/**
          * Stops this spotter if it is currently spotting.
@@ -149,26 +200,9 @@
 		}
 		clearTimeout(timer);
 	    }
-	}
+	};
 	
-	/**
-         * Function that actually makes the request.
-         *
-         * @private
-         * @param {String} url the json request URL
-         */
-	var request = function(url)  {
-	    var head = document.getElementsByTagName("head");
-	    var script = document.createElement('script');
-	    script.id = varName+'_'+'request';
-	    script.type = 'text/javascript';
-	    script.src = url;
-	    if(lastScriptTag) {
-		head[0].removeChild(lastScriptTag);
-	    }
-	    head[0].appendChild(script);
-	    lastScriptTag = script;
-	}
+
     
 	/**
          * Register an observer with this object
@@ -184,38 +218,10 @@
 	    } else  {
 		throw new TypeError('Observer must implement a notify method.');
 	    }
-	}
+	};
     
-	/**
-         * Notify this Observable's observers
-         *
-         * @private
-         * @param {Object} data that will be sent to the observers
-         */
-	var notifyObservers = function(data)  {
-	    for(var i in observers)  {
-		if(typeof observers[i] === 'object')
-		    observers[i].notify(data);
-		else if(typeof observers[i] === 'function')
-		    observers[i](data);
-		else
-		    throw new Error("observer list contains an invalid object");
-	    }
-	}
 
-
-	var bufferedNotifyObservers = function()  {
-	    if(buffer.length > 0)  {
-		bufferTimer = setTimeout(function()  {
-		    notifyObservers(buffer.pop());
-		    bufferedNotifyObservers();
-		}, 2000);
-	    } else  {
-		clearTimeout(bufferTimer);
-		bufferTimer = false;
-	    }
-	}
-    }//end spotter constructor
+    }; //end spotter constructor
 
 
     /************************************ END SPOTTER ***********************************/
@@ -254,14 +260,20 @@
 	/*a = [{'name':'a'},{'name':'b'},{'name':'c'},{'name':'d'}];
           b = [{'name':'c'},{'name':'b'},{'name':'d'},{'name':'f'}];*/
 	
-	var result = new Array();
-	var indices = new Object();
-	for(var i in b)
-	    indices[b[i]]==undefined?indices[b[i]['name']]=parseInt(i):null;
-	for(var i in a)
-	    result[i] = indices[a[i]['name']]==undefined?-1:indices[a[i]['name']];
+	var result = [];
+	var indices = {};
+	var i;
+	for(i=0; i < b.length; i++)  {
+	    //indices[b[i]]===undefined?indices[b[i].name]=parseInt(i,10):null;
+	    if(!indices[b[i]])  {
+		indices[b[i].name]=parseInt(i,10);
+	    }
+	}
+	for(i=0; i < a.length; i++)  {
+	    result[i] = indices[a[i].name]===undefined?-1:indices[a[i].name];
+	}
 	return result;
-    }
+    };
 
     /**
      * returns an array of arrays.  the first
@@ -275,17 +287,32 @@
      * TODO: use the changes algorithm as a subroutine
      */
     spotterjs.util.complements = function(a, b)  {
-	var counts = new Object();
-	var aMinusB = new Array();
-	var bMinusA = new Array();
-	for(var i in a)
-	    counts[a[i]]==undefined?counts[a[i]['name']]=i:null;
-	for(var j in b)
-	    counts[b[j]['name']]==null?bMinusA.push(b[j]):counts[b[j]['name']]=-1;
-	for(var k in counts)
-	    counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+	var counts = {};
+	var aMinusB = [];
+	var bMinusA = [];
+	var i, j, k;
+	for(i=0; i<a.length; i++)  {
+	    //counts[a[i]]===undefined?counts[a[i].name]=i:null;
+	    if(counts[a[i]]===undefined)  {
+		counts[a[i].name]=i;
+	    }
+	}
+	for(j=0; j < j.length;  j++)  {
+	    //counts[b[j].name]===null?bMinusA.push(b[j]):counts[b[j].name]=-1;
+	    if(counts[b[j].name]===null)  {
+		bMinusA.push(b[j]);
+	    } else  {
+		counts[b[j].name]=-1;
+	    }
+	}
+	for(k in counts)  {
+	    //counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+	    if(counts[k] >= 0)  {
+		aMinusB.push(a[counts[k]]);
+	    }
+	}
 	return [aMinusB,bMinusA];
-    }
+    };
     /************************************ END UTILS ***********************************/
 
 
@@ -301,6 +328,7 @@
      * The general Module from which everything else inherits
      */
     spotterjs.modules.Module = function(options) {
+	var period;
 	if(options.period !== undefined && typeof(options.period)==="number")  {
 	    period = options.period;
 	}  else  {
@@ -312,14 +340,14 @@
 	    } else  {
 		return period;
 	    }
-	}
-    }
+	};
+    };
     /************************************ END MODULES ***********************************/
 
-    //namespace shortcut
+    //namespace shortcuts
     window.spotterjs = spotterjs;
     window.Spotter = spotterjs.Spotter;
-})(window);
+})(window); 
 /**
  * spotter.delicious.js
  * Copyright (C) 2010 Semmy Purewal
