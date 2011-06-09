@@ -5,20 +5,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.identica) spotterjs.modules.identica = {};
-    else if(typeof spotterjs.modules.identica != "object")
+    if(!spotterjs.modules.identica) {
+	spotterjs.modules.identica = {};
+    } else if(typeof spotterjs.modules.identica != "object")  {
 	throw new Error("spotterjs.modules.identica is not an object!");
+    }
 
     /**
      * Required options: q (searchString)
@@ -40,14 +47,15 @@
 	
 	var lastID = 0;  //this is a temporary fix until since_id is properly implemented
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/search.json';
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString);
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -67,8 +75,8 @@
 		processedData.update = false;
 	    }
 	    
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
     spotterjs.modules.identica.realtimesearch = function(options)  {
@@ -79,13 +87,14 @@
 	var currentCount=1000;
 	var counts = [0,0,currentCount];
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires searchString to be specified as an option");
+	}
 	
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/statuses/public_timeline.json?count='+currentCount;
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -111,7 +120,7 @@
 	    else  {
 		processedData.update = false;
 	    }
-	    return processedData;;
-	}
-    }
+	    return processedData;
+	};
+    };
 })(window);

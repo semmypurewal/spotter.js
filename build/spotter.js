@@ -27,14 +27,19 @@
 	var observers = [];
 	var timer = null;
 	var module;
+	var buffer = [];
+	var isBuffered;
+	var bufferTimer;
+
 	
-	window["spotterjs"][varName] = this;
+	window.spotterjs[varName] = this;
 	
-	if(!spotterjs.modules[type.split(".")[0]] || !spotterjs.modules[type.split(".")[0]][type.split(".")[1]])
+	if(!spotterjs.modules[type.split(".")[0]] || !spotterjs.modules[type.split(".")[0]][type.split(".")[1]])  {
 	    throw new Error("Spotter: Module " + type + " not found! (Did you remember to include it via a script tag?)");
+	}
 	
 	try  {
-	    module = new (window["spotterjs"]["modules"][type.split(".")[0]][type.split(".")[1]])(options);
+	    module = new (window.spotterjs.modules[type.split(".")[0]][type.split(".")[1]])(options);
 	} catch(e)  {
 	    throw new Error(e);
 	}
@@ -45,13 +50,65 @@
 
 
 	/**
-         * Start spotting.
+         * Function that actually makes the request.
          *
-         * TODO: set up a time out so that if the last request doesn't return 
-         *       the remaining requests are not blocked
+         * @private
+         * @param {String} url the json request URL
          */
-	this.start = function()  {
-	    if(!spotting) spotting = true;
+	var request = function(url)  {
+	    var head = document.getElementsByTagName("head");
+	    var script = document.createElement('script');
+	    script.id = varName+'_'+'request';
+	    script.type = 'text/javascript';
+	    script.src = url;
+	    if(lastScriptTag) {
+		head[0].removeChild(lastScriptTag);
+	    }
+	    head[0].appendChild(script);
+	    lastScriptTag = script;
+	};
+
+	/**
+         * Notify this Observable's observers
+         *
+         * @private
+         * @param {Object} data that will be sent to the observers
+         */
+	var notifyObservers = function(data)  {
+	    for(var i in observers)  {
+		if(typeof observers[i] === 'object')  {
+		    observers[i].notify(data);
+		}  else if(typeof observers[i] === 'function')  {
+		    observers[i](data);
+		}  else  {
+		    throw new Error("observer list contains an invalid object");
+		}
+	    }
+	};
+
+	/**
+         * Notify this Observable's observers in a buffered manner
+         *
+         * @private
+         */
+	var bufferedNotifyObservers = function()  {
+	    if(buffer.length > 0)  {
+		bufferTimer = setTimeout(function()  {
+		    notifyObservers(buffer.pop());
+		    bufferedNotifyObservers();
+		}, 2000);
+	    } else  {
+		clearTimeout(bufferTimer);
+		bufferTimer = false;
+	    }
+	};
+
+	/**
+         * A single spot request
+         *
+         * @private
+         */
+	var spot = function()  {
 	    var url;
 	    var obj = this;
 	    
@@ -66,11 +123,34 @@
 		url += '&random='+Math.floor(Math.random()*10000);  //add random number to help avoid caching in safari and chrome
 		request(url);
 	    }
-	    if(module.nextTimeout() > 0)  {
-		timer = setTimeout(function() { obj.start(); }, module.nextTimeout()*1000);
+	};
+
+	/**
+         * Start spotting.
+         *
+         * TODO: set up a time out so that if the last request doesn't return 
+         *       the remaining requests are not blocked
+         */
+	this.start = function()  {
+	    if(!spotting) { 
+		spotting = true;
+		spot();
+	    }  else  {
+		throw new Error("Spotter: You can't start a spotter that is already running!");
 	    }
-	}
-    
+	};
+
+	/**
+         * Start spotting.
+         *
+         * TODO: set up a time out so that if the last request doesn't return 
+         *       the remaining requests are not blocked
+         */
+	this.bufferStart = function()  {
+	    isBuffered = true;
+	    this.start();
+	};
+
 	/**
          * Receives the response from the ajax request and send it
          * to the appropriate module for processing.  Notifies
@@ -80,13 +160,28 @@
          */
 	this.callback = function(rawData)  {
 	    var processedData = module.process(rawData); //send the raw data to the module for processing
+	    var i;
 	    //now the processedData has an 'update' attribute and a 'data' attribute
 	    if(processedData.update) {
-		notifyObservers(processedData.data);
+		if(!isBuffered)  {
+		    notifyObservers(processedData.data);
+		} else  {
+		    for(i=0; i < processedData.data.length; i++)  {
+			buffer.push(processedData.data[i]);
+		    }
+		    if(!bufferTimer)  {
+			bufferedNotifyObservers();
+		    }
+		}
 	    }
-	    //here is where we need to set up the next call by getting the delay from the module
 	    lastCallReturned = true;
-	}
+	    if(module.nextTimeout() > 0)  {
+		timer = setTimeout(spot, module.nextTimeout()*1000);
+	    }
+	    else  {
+		this.stop();
+	    }
+	};
 
 	/**
          * Stops this spotter if it is currently spotting.
@@ -105,26 +200,9 @@
 		}
 		clearTimeout(timer);
 	    }
-	}
+	};
 	
-	/**
-         * Function that actually makes the request.
-         *
-         * @private
-         * @param {String} url the json request URL
-         */
-	var request = function(url)  {
-	    var head = document.getElementsByTagName("head");
-	    var script = document.createElement('script');
-	    script.id = varName+'_'+'request';
-	    script.type = 'text/javascript';
-	    script.src = url;
-	    if(lastScriptTag) {
-		head[0].removeChild(lastScriptTag);
-	    }
-	    head[0].appendChild(script);
-	    lastScriptTag = script;
-	}
+
     
 	/**
          * Register an observer with this object
@@ -140,25 +218,11 @@
 	    } else  {
 		throw new TypeError('Observer must implement a notify method.');
 	    }
-	}
+	};
     
-	/**
-         * Notify this Observable's observers
-         *
-         * @private
-         * @param {Object} data that will be sent to the observers
-         */
-	var notifyObservers = function(data)  {
-	    for(var i in observers)  {
-		if(typeof observers[i] === 'object')
-		    observers[i].notify(data);
-		else if(typeof observers[i] === 'function')
-		    observers[i](data);
-		else
-		    throw new Error("observer list contains an invalid object");
-	    }
-	}
-    }//end spotter constructor
+
+    }; //end spotter constructor
+
 
     /************************************ END SPOTTER ***********************************/
 
@@ -196,14 +260,20 @@
 	/*a = [{'name':'a'},{'name':'b'},{'name':'c'},{'name':'d'}];
           b = [{'name':'c'},{'name':'b'},{'name':'d'},{'name':'f'}];*/
 	
-	var result = new Array();
-	var indices = new Object();
-	for(var i in b)
-	    indices[b[i]]==undefined?indices[b[i]['name']]=parseInt(i):null;
-	for(var i in a)
-	    result[i] = indices[a[i]['name']]==undefined?-1:indices[a[i]['name']];
+	var result = [];
+	var indices = {};
+	var i;
+	for(i=0; i < b.length; i++)  {
+	    //indices[b[i]]===undefined?indices[b[i].name]=parseInt(i,10):null;
+	    if(!indices[b[i]])  {
+		indices[b[i].name]=parseInt(i,10);
+	    }
+	}
+	for(i=0; i < a.length; i++)  {
+	    result[i] = indices[a[i].name]===undefined?-1:indices[a[i].name];
+	}
 	return result;
-    }
+    };
 
     /**
      * returns an array of arrays.  the first
@@ -215,20 +285,34 @@
      *
      * TODO: make more general (for arbitrary arrays)
      * TODO: use the changes algorithm as a subroutine
-     *
      */
     spotterjs.util.complements = function(a, b)  {
-	var counts = new Object();
-	var aMinusB = new Array();
-	var bMinusA = new Array();
-	for(var i in a)
-	    counts[a[i]]==undefined?counts[a[i]['name']]=i:null;
-	for(var j in b)
-	    counts[b[j]['name']]==null?bMinusA.push(b[j]):counts[b[j]['name']]=-1;
-	for(var k in counts)
-	    counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+	var counts = {};
+	var aMinusB = [];
+	var bMinusA = [];
+	var i, j, k;
+	for(i=0; i<a.length; i++)  {
+	    //counts[a[i]]===undefined?counts[a[i].name]=i:null;
+	    if(counts[a[i]]===undefined)  {
+		counts[a[i].name]=i;
+	    }
+	}
+	for(j=0; j < j.length;  j++)  {
+	    //counts[b[j].name]===null?bMinusA.push(b[j]):counts[b[j].name]=-1;
+	    if(counts[b[j].name]===null)  {
+		bMinusA.push(b[j]);
+	    } else  {
+		counts[b[j].name]=-1;
+	    }
+	}
+	for(k in counts)  {
+	    //counts[k] >= 0?aMinusB.push(a[counts[k]]):null;
+	    if(counts[k] >= 0)  {
+		aMinusB.push(a[counts[k]]);
+	    }
+	}
 	return [aMinusB,bMinusA];
-    }
+    };
     /************************************ END UTILS ***********************************/
 
 
@@ -244,29 +328,27 @@
      * The general Module from which everything else inherits
      */
     spotterjs.modules.Module = function(options) {
-	//var period = options.period || options.timeout || 45;
 	var period;
-	if(options.period !== undefined && typeof(options.period) === "number")  {
+	if(options.period !== undefined && typeof(options.period)==="number")  {
 	    period = options.period;
 	}  else  {
 	    period = 45;
 	}
 
-	alert(period);
 	this.nextTimeout = function(t)  {
-	    if(t)  {
+	    if(t !== undefined)  {
 		period = t;
 	    } else  {
 		return period;
 	    }
-	}
-    }
+	};
+    };
     /************************************ END MODULES ***********************************/
 
-    //namespace shortcut
+    //namespace shortcuts
     window.spotterjs = spotterjs;
     window.Spotter = spotterjs.Spotter;
-})(window);
+})(window); 
 /**
  * spotter.delicious.js
  * Copyright (C) 2010 Semmy Purewal
@@ -276,58 +358,69 @@
  */
 
 (function(window)  {
-
-    if(!spotterjs)
+    var spotterjs = window.spotterjs;
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules)  {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-
-    if(!spotterjs.modules.delicious)
+    if(!spotterjs.modules.delicious)  {
 	spotterjs.modules.delicious = {};
-    else if(typeof spotterjs.modules.delicious != "object")
+    } else if(typeof spotterjs.modules.delicious != "object")  {
 	throw new Error("spotterjs.modules.delicious is not an object!");
+    }
 
 
     spotterjs.modules.delicious.recent = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
+	var find = function (item, array)  {
+	    for(var i = 0; i < array.length; ++i)  {
+		if(array[i].u === item.u) {
+		    return i;
+		}
+	    }
+	    return array.length;
+	};
+
 	var lastTop;
 	this.url = function()  {
 	    var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
 	    return url;
-	}
+	};
 
 	this.process = function(data)  {
 	    var processedData = {};
+	    var pops;
 	    if(lastTop === undefined)  {
 		lastTop = data[0];
 		processedData = {data:data, update:true};
 	    }
-	    else if(lastTop["u"] === data[0]["u"])  {
+	    else if(lastTop.u === data[0].u)  {
 		processedData = {data:data, update:false};
 	    }
 	    else  {
 		pops = data.length - find(lastTop, data);
-		for(var i = 0; i < pops; i++) data.pop();
+		for(var i = 0; i < pops; i++) {
+		    data.pop();
+		}
 		processedData = {data:data, update:true};
 		lastTop = data[0];
 	    }
 	    return processedData;
-	}
+	};
+	
 
-	var find = function (item, array)  {
-	    for(var i = 0; i < array.length; ++i)  {
-		if(array[i]["u"] === item["u"]) return i;
-	    }
-	    return array.length;
-	}
-    }//end recent module
+    }; //end recent module
 
     /**
      * Required options: tags
@@ -343,15 +436,25 @@
 	
 	var tags = options.tags;
 	
-	if(tags === undefined || tags === "")
+	if(tags === undefined || tags === "")  {
 	    throw new Error("delicious tags module requires tags to be specified as an option");	
+	}
 	
 	var lastTop;
+
+	var find = function (item, array)  {
+	    for(var i = 0; i < array.length; ++i)  {
+		if(array[i].u === item.u) { 
+		    return i;
+		}
+	    }
+	    return array.length;
+	};
 
 	this.url = function()  {
 	    var url = 'http://feeds.delicious.com/v2/json/tag/'+tags+'?count=100';
 	    return url;
-	}
+	};
 	
 	/**
          * process delicious data
@@ -360,51 +463,57 @@
          */
 	this.process = function(data)  {
 	    var processedData = {};
+	    var pops;
 	    if(lastTop === undefined)  {
 		lastTop = data[0];
 		processedData = {data:data, update:true};
 	    }
-	    else if(lastTop["u"] === data[0]["u"])  {
+	    else if(lastTop.u === data[0].u)  {
 		processedData = {data:data, update:false};
 	    }
 	    else  {
 		pops = data.length - find(lastTop, data);
-		for(var i = 0; i < pops; i++) data.pop();
+		for(var i = 0; i < pops; i++) {
+		    data.pop();
+		}
 		processedData = {data:data, update:true};
 		lastTop = data[0];
 	    }
 	    return processedData;
-	}
+	};
 	
-	var find = function (item, array)  {
-	    for(var i = 0; i < array.length; ++i)  {
-		if(array[i]["u"] === item["u"]) return i;
-	    }
-	    return array.length;
-	}
-    }
+
+    };
 })(window);
 /**
  * spotter.facebook.js
- * Copyright (C) 2010 Semmy Purewal
- *
+ * Copyright (C) 2010-2011 Semmy Purewal
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotter.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
-	throw new Error("spotterjs.modules is not an object!");
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else {
+	if(typeof spotterjs.modules != "object")  {
+	    throw new Error("spotterjs.modules is not an object!");
+	}
+    }
     
-    if(!spotterjs.modules.facebook) spotterjs.modules.facebook = {};
-    else if(typeof spotterjs.modules.facebook != "object")
+    if(!spotterjs.modules.facebook) { 
+	spotterjs.modules.facebook = {};
+    } else if(typeof spotterjs.modules.facebook != "object")  {
 	throw new Error("spotterjs.modules.facebook is not an object!");
+    }
 
     /**
      * Required options: q
@@ -420,19 +529,18 @@
 	var lastCreatedTime = null;
 	var i;
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("facebook search module requires a search string (q) to be specified as an option");
+	}
 	
 	this.url = function()  {
-	    var url = 'http://graph.facebook.com/search'
+	    var url = 'http://graph.facebook.com/search';
 	    url += '?q='+escape(searchString);
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
-
-	    //alert(lastCreatedTime);
 
 	    processedData.data = [];
 	    //filter the data
@@ -442,19 +550,15 @@
 		    rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
 		    processedData.data.push(rawData.data[i]);
 		}
-		else  {
-		    //alert("filtered:"+rawData.data.results[i].text);
-		}
 	    }
 
-
-	    lastCreatedTime = rawData.data[0]['created_time'];
+	    lastCreatedTime = rawData.data[0].created_time;
 
 	    processedData.update = (processedData.data.length>0)?true:false;
 
-	    return processedData;;
-	}
-    }
+	    return processedData;
+	};
+    };
 })(window);
 /**
  * spotter.flickr.js
@@ -464,37 +568,56 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+
+    if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules !== "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.flickr) spotterjs.modules.flickr = {};
-    else if(typeof spotterjs.modules.flickr != "object")
+    if(!spotterjs.modules.flickr) { 
+	spotterjs.modules.flickr = {};
+    } else if(typeof spotterjs.modules.flickr !== "object")  {
 	throw new Error("spotterjs.modules.flickr is not an object!");
+    }
 
     spotterjs.modules.flickr.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
-	
-	if(options == undefined || options.api_key == undefined || (options.q == undefined && options.tags == undefined))
+
+	if(options === undefined || options.api_key === undefined || (options.q === undefined && options.tags === undefined))  {
 	    throw new Error("flickr search module requires an api_key and a search string (q) or tags to be defined as an option");
+	}
 
 	var api_key = options.api_key;
 	var searchString = options.q;
 	var tags = options.tags;
 	
 	var lastTop = {id:-1};  //stupid hack
+
+	/** private method that builds a photo URL from a photo object **/
+	var buildPhotoURL = function(photo)  {
+	    var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
+	    return u;
+	};
+
 	
 	this.url = function()  {
 	    var url = 'http://api.flickr.com/services/rest/?method=flickr.photos.search';
 	    url += '&api_key='+api_key+'&format=json&content_type=1';
-	    if(tags != undefined) url+= '&tags='+escape(tags);
-	    if(searchString != undefined) url+= '&text='+escape(searchString);
+	    if(tags !== undefined) { 
+		url+= '&tags='+escape(tags);
+	    }
+	    if(searchString !== undefined) {
+		url+= '&text='+escape(searchString);
+	    }
 	    return {url:url, callbackParam:"jsoncallback"};
-	}
+	};
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -513,14 +636,10 @@
 	    
 	    processedData.update = (processedData.data.length>0)?true:false;	
 	    return processedData;
-	}
+	};
 
-	/** private method that builds a photo URL from a photo object **/
-	var buildPhotoURL = function(photo)  {
-	    var u = "http://farm" + photo.farm + ".static.flickr.com/"+photo.server+"/"+ photo.id + "_" + photo.secret + ".jpg";
-	    return u;
-	}
-    }
+
+    };
 
     spotterjs.modules.flickr.feeds = function(options)  {
 	spotterjs.modules.Module.call(this,options);
@@ -531,9 +650,11 @@
 
 	this.url = function()  {
 	    var url = 'http://api.flickr.com/services/feeds/photos_public.gne?format=json';
-	    if(tags !== null) url+= '&tags='+escape(tags);
+	    if(tags !== null) {
+		url+= '&tags='+escape(tags);
+	    }
 	    return {url:url, callbackParam:"jsoncallback"};
-	}
+	};
     
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -545,7 +666,7 @@
 		photos[i].url = photos[i].media.m.replace("_m","");
 		photos[i].user_url = "http://www.flickr.com/"+photos[i].author_id;
 		photos[i].photo_url = photos[i].link;
-		if(photos[i].author.match(/\(([^\)]*)\)/) === null) alert(photos[i].author);
+		//if(photos[i].author.match(/\(([^\)]*)\)/) === null) alert(photos[i].author);
 		photos[i].user_id = photos[i].author.match(/\(([^\)]*)\)/)[1];
 		processedData.data.push(photos[i]);
 	    }
@@ -554,8 +675,8 @@
 	    
 	    processedData.update = (processedData.data.length>0)?true:false;	
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
 /**
  * spotter.identica.js
@@ -564,20 +685,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.identica) spotterjs.modules.identica = {};
-    else if(typeof spotterjs.modules.identica != "object")
+    if(!spotterjs.modules.identica) {
+	spotterjs.modules.identica = {};
+    } else if(typeof spotterjs.modules.identica != "object")  {
 	throw new Error("spotterjs.modules.identica is not an object!");
+    }
 
     /**
      * Required options: q (searchString)
@@ -599,14 +727,15 @@
 	
 	var lastID = 0;  //this is a temporary fix until since_id is properly implemented
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/search.json';
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString);
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -626,8 +755,8 @@
 		processedData.update = false;
 	    }
 	    
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
     spotterjs.modules.identica.realtimesearch = function(options)  {
@@ -638,13 +767,14 @@
 	var currentCount=1000;
 	var counts = [0,0,currentCount];
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires searchString to be specified as an option");
+	}
 	
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/statuses/public_timeline.json?count='+currentCount;
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -670,9 +800,9 @@
 	    else  {
 		processedData.update = false;
 	    }
-	    return processedData;;
-	}
-    }
+	    return processedData;
+	};
+    };
 })(window);
 /**
  * spotter.twitpic.js
@@ -680,20 +810,28 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) { 
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
-    else if(typeof spotterjs.modules.twitpic != "object")
+    if(!spotterjs.modules.twitpic)  {
+	spotterjs.modules.twitpic = {};
+    } else if(typeof spotterjs.modules.twitpic != "object")  {
 	throw new Error("spotterjs.modules.twitpic is not an object!");
+    }
 
     /**
      * Required options: searchString
@@ -719,14 +857,15 @@
 	var refreshURL = "";
 	var searchString = options.q;
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitpic search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
+	    var url = 'http://search.twitter.com/search.json';
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -738,7 +877,7 @@
 	    
 	    //process rawData and put it in processedData
 	    processedData.data = [];
-	    for(i in rawData.results)  {
+	    for(i=0; i < rawData.results.length; i++)  {
 		//put the processed version of the raw data in the 
 		//processed data array
 		rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
@@ -752,8 +891,8 @@
 		}
 	    }
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
 /**
  * spotter.twitter.js
@@ -764,20 +903,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
     
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules)  {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules !== "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
     
-    if(!spotterjs.modules.twitter) spotterjs.modules.twitter = {};
-    else if(typeof spotterjs.modules.twitter != "object")
+    if(!spotterjs.modules.twitter) {
+	spotterjs.modules.twitter = {};
+    } else if(typeof spotterjs.modules.twitter !== "object")  {
 	throw new Error("spotterjs.modules.twitter is not an object!");
+    }
 
     /**
      * Required options: q
@@ -796,8 +942,9 @@
 	var i;
 	var excludeREString = "";
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitter search module requires a search string (q) to be specified as an option");
+	}
 
 	if(exclude !== undefined)  {
 	    for(i=0;i < exclude.length; i++)  {
@@ -813,11 +960,11 @@
 
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
+	    var url = 'http://search.twitter.com/search.json';
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -844,8 +991,8 @@
 
 	    processedData.update = (processedData.data.length>0)?true:false;
 
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
 
@@ -864,9 +1011,11 @@
 	
 	this.url = function()  {
 	    var url = "http://api.twitter.com/trends.json?";
-	    if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
+	    if(options !== undefined && options.exclude !== undefined) { 
+		url+="exclude="+options.exclude;
+	    }
 	    return url;
-	}
+	};
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -881,6 +1030,6 @@
 	    lastTrends = rawData.trends;
 	    processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);

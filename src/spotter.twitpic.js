@@ -4,20 +4,28 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) { 
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
-    else if(typeof spotterjs.modules.twitpic != "object")
+    if(!spotterjs.modules.twitpic)  {
+	spotterjs.modules.twitpic = {};
+    } else if(typeof spotterjs.modules.twitpic != "object")  {
 	throw new Error("spotterjs.modules.twitpic is not an object!");
+    }
 
     /**
      * Required options: searchString
@@ -43,14 +51,15 @@
 	var refreshURL = "";
 	var searchString = options.q;
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitpic search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
+	    var url = 'http://search.twitter.com/search.json';
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -62,7 +71,7 @@
 	    
 	    //process rawData and put it in processedData
 	    processedData.data = [];
-	    for(i in rawData.results)  {
+	    for(i=0; i < rawData.results.length; i++)  {
 		//put the processed version of the raw data in the 
 		//processed data array
 		rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
@@ -76,6 +85,6 @@
 		}
 	    }
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
