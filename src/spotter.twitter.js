@@ -7,20 +7,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
     
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules)  {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules !== "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
     
-    if(!spotterjs.modules.twitter) spotterjs.modules.twitter = {};
-    else if(typeof spotterjs.modules.twitter != "object")
+    if(!spotterjs.modules.twitter) {
+	spotterjs.modules.twitter = {};
+    } else if(typeof spotterjs.modules.twitter !== "object")  {
 	throw new Error("spotterjs.modules.twitter is not an object!");
+    }
 
     /**
      * Required options: q
@@ -39,8 +46,9 @@
 	var i;
 	var excludeREString = "";
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitter search module requires a search string (q) to be specified as an option");
+	}
 
 	if(exclude !== undefined)  {
 	    for(i=0;i < exclude.length; i++)  {
@@ -56,11 +64,11 @@
 
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
+	    var url = 'http://search.twitter.com/search.json';
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -87,8 +95,8 @@
 
 	    processedData.update = (processedData.data.length>0)?true:false;
 
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
 
@@ -107,9 +115,11 @@
 	
 	this.url = function()  {
 	    var url = "http://api.twitter.com/trends.json?";
-	    if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
+	    if(options !== undefined && options.exclude !== undefined) { 
+		url+="exclude="+options.exclude;
+	    }
 	    return url;
-	}
+	};
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -124,6 +134,6 @@
 	    lastTrends = rawData.trends;
 	    processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);

@@ -684,20 +684,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.identica) spotterjs.modules.identica = {};
-    else if(typeof spotterjs.modules.identica != "object")
+    if(!spotterjs.modules.identica) {
+	spotterjs.modules.identica = {};
+    } else if(typeof spotterjs.modules.identica != "object")  {
 	throw new Error("spotterjs.modules.identica is not an object!");
+    }
 
     /**
      * Required options: q (searchString)
@@ -719,14 +726,15 @@
 	
 	var lastID = 0;  //this is a temporary fix until since_id is properly implemented
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/search.json';
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString);
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString);
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -746,8 +754,8 @@
 		processedData.update = false;
 	    }
 	    
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
     spotterjs.modules.identica.realtimesearch = function(options)  {
@@ -758,13 +766,14 @@
 	var currentCount=1000;
 	var counts = [0,0,currentCount];
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("identica search module requires searchString to be specified as an option");
+	}
 	
 	this.url = function()  {
 	    var url = 'http://identi.ca/api/statuses/public_timeline.json?count='+currentCount;
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -790,9 +799,9 @@
 	    else  {
 		processedData.update = false;
 	    }
-	    return processedData;;
-	}
-    }
+	    return processedData;
+	};
+    };
 })(window);
 /**
  * spotter.twitpic.js
@@ -800,20 +809,28 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
 
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
 
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules) { 
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules != "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
 
-    if(!spotterjs.modules.twitpic) spotterjs.modules.twitpic = {};
-    else if(typeof spotterjs.modules.twitpic != "object")
+    if(!spotterjs.modules.twitpic)  {
+	spotterjs.modules.twitpic = {};
+    } else if(typeof spotterjs.modules.twitpic != "object")  {
 	throw new Error("spotterjs.modules.twitpic is not an object!");
+    }
 
     /**
      * Required options: searchString
@@ -839,14 +856,15 @@
 	var refreshURL = "";
 	var searchString = options.q;
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitpic search module requires a search string (q) to be specified as an option");
+	}
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
-	    url += refreshURL != ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
+	    var url = 'http://search.twitter.com/search.json';
+	    url += refreshURL !== ""?refreshURL:'?q='+escape(searchString)+"+twitpic";
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -858,7 +876,7 @@
 	    
 	    //process rawData and put it in processedData
 	    processedData.data = [];
-	    for(i in rawData.results)  {
+	    for(i=0; i < rawData.results.length; i++)  {
 		//put the processed version of the raw data in the 
 		//processed data array
 		rematch = /http\:\/\/twitpic.com\/(\w+)/.exec(rawData.results[i].text);
@@ -872,8 +890,8 @@
 		}
 	    }
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
 /**
  * spotter.twitter.js
@@ -884,20 +902,27 @@
  */
 
 (function(window)  {
+    var spotterjs = window.spotterjs;
 
-    if(!spotterjs)
+    if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
+    }
     
-    if(!spotterjs.util)
+    if(!spotterjs.util)  {
 	throw new Error("spotterjs.util not yet loaded!");
+    }
     
-    if(!spotterjs.modules) spotterjs.modules = {};
-    else if(typeof spotterjs.modules != "object")
+    if(!spotterjs.modules)  {
+	spotterjs.modules = {};
+    } else if(typeof spotterjs.modules !== "object")  {
 	throw new Error("spotterjs.modules is not an object!");
+    }
     
-    if(!spotterjs.modules.twitter) spotterjs.modules.twitter = {};
-    else if(typeof spotterjs.modules.twitter != "object")
+    if(!spotterjs.modules.twitter) {
+	spotterjs.modules.twitter = {};
+    } else if(typeof spotterjs.modules.twitter !== "object")  {
 	throw new Error("spotterjs.modules.twitter is not an object!");
+    }
 
     /**
      * Required options: q
@@ -916,8 +941,9 @@
 	var i;
 	var excludeREString = "";
 	
-	if(searchString === undefined || searchString === "")
+	if(searchString === undefined || searchString === "")  {
 	    throw new Error("twitter search module requires a search string (q) to be specified as an option");
+	}
 
 	if(exclude !== undefined)  {
 	    for(i=0;i < exclude.length; i++)  {
@@ -933,11 +959,11 @@
 
 
 	this.url = function()  {
-	    var url = 'http://search.twitter.com/search.json'
+	    var url = 'http://search.twitter.com/search.json';
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;
-	}
+	};
 
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -964,8 +990,8 @@
 
 	    processedData.update = (processedData.data.length>0)?true:false;
 
-	    return processedData;;
-	}
+	    return processedData;
+	};
     };
 
 
@@ -984,9 +1010,11 @@
 	
 	this.url = function()  {
 	    var url = "http://api.twitter.com/trends.json?";
-	    if(options != undefined && options.exclude != undefined) url+="exclude="+options.exclude;
+	    if(options !== undefined && options.exclude !== undefined) { 
+		url+="exclude="+options.exclude;
+	    }
 	    return url;
-	}
+	};
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
@@ -1001,6 +1029,6 @@
 	    lastTrends = rawData.trends;
 	    processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
 	    return processedData;
-	}
-    }
+	};
+    };
 })(window);
