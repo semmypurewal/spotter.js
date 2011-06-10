@@ -16,9 +16,10 @@
      * @constructor
      * @param {String} type the type the module type associated witht this spotter, e.g. "twitter.search"
      * @param {Object} options a hash of options for the appropriate module, e.g. {searchString: "Justin Beiber"}
+     * @param {Object} optional list of options to spotter
      * @throws {Error} An error is thrown if there is a problem loading the module
      */
-    spotterjs.Spotter = function(type, options)  {
+    spotterjs.Spotter = function(type, options, spotter_options)  {
 	spotterjs.Spotter.instanceCount = (spotterjs.Spotter.instanceCount === undefined)?1:spotterjs.Spotter.instanceCount+1;
 	var varName =  "_so"+spotterjs.Spotter.instanceCount;
 	var spotting = false;
@@ -30,6 +31,10 @@
 	var buffer = [];
 	var isBuffered;
 	var bufferTimer;
+
+	if(spotter_options && spotter_options.buffer === true)  {
+	    isBuffered = true;
+	}
 	
 	window.spotterjs[varName] = this;
 	
@@ -145,10 +150,10 @@
          * TODO: set up a time out so that if the last request doesn't return 
          *       the remaining requests are not blocked
          */
-	this.bufferStart = function()  {
+	/**this.bufferStart = function()  {
 	    isBuffered = true;
 	    this.start();
-	};
+	};**/
 
 	/**
          * Receives the response from the ajax request and send it
@@ -961,7 +966,6 @@
 	    }
 
 	    processedData.update = (processedData.data.length>0)?true:false;
-
 	    return processedData;
 	};
     };

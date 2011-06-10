@@ -9,12 +9,13 @@ Copyright (C) 2010 Semmy Purewal
   <script src="../../build/spotter.js" type="text/javascript"></script>
 
   <script type="text/javascript">
-
 function init()  {
-    //create your spotter
-    var s = new Spotter("twitter.search",{q:"bieber", period:30,exclude:"tweetphoto,twitpic"});
-    
-    //register your observer
+    //create your spotter with the {buffer:true} option sent in as a spotter option
+    var s = new Spotter("twitter.search",
+			{q:"bieber", period:30,exclude:"tweetphoto,twitpic"},
+			{buffer:true});
+
+    //register your observer to handle a single tweet
     s.register(function(tweet) {
         var t = $("<li style='display:none;color:red'>"+tweet.text+"\t"+tweet.created_at+"</li>");
 	$("#bieberTweets").prepend(t);
@@ -22,9 +23,8 @@ function init()  {
     });
 
     //start Buffered Bieber Spotting!
-    s.bufferStart(); 
+    s.start();
 }
-
   </script>
 
  </head>
