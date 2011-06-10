@@ -30,7 +30,6 @@
 	var buffer = [];
 	var isBuffered;
 	var bufferTimer;
-
 	
 	window.spotterjs[varName] = this;
 	
@@ -201,8 +200,6 @@
 		clearTimeout(timer);
 	    }
 	};
-	
-
     
 	/**
          * Register an observer with this object

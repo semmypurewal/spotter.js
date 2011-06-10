@@ -47,7 +47,7 @@
 	    }
 	}
 
-	this.base = function(b)  {
+	this.baseURL = function(b)  {
 	    if(b && typeof b === "string")  {
 		base = b;
 	    }
@@ -55,10 +55,10 @@
 		return base;
 	    }
 	};
-	this.base('http://search.twitter.com/search.json');
+	this.baseURL('http://search.twitter.com/search.json');
 
 	this.url = function()  {
-	    var url = this.base();
+	    var url = this.baseURL();
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;

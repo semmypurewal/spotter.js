@@ -18,10 +18,10 @@ function TrendController(view)  {
 
 TrendController.prototype.notify = function(trends)  {
     //var trend = trends.added[4].name;
-    var trend = "linux|GNU|apple|mac";
+    var trend = "bieber";
     this.view.html("<span class='trend'>"+trend+"</span>");
     if(this.spotter != null) this.spotter.stop();
-    this.spotter = new Spotter("identica.realtimesearch",{q:trend});
+    this.spotter = new Spotter("identica.search",{q:trend});
     var lc = new ListController($('#list_view'));
     this.spotter.register(lc);
     this.spotter.start();
@@ -37,10 +37,10 @@ ListController.prototype.notify = function(statuses)  {
 	var temp = $("<div></div>");
 	$(temp).attr('id',statuses[t]['id']);
         $(temp).attr('class','tweet');
-	$(temp).html("<a target='_blank' class='from_user' href='"+ statuses[t]['user']['statusnet:profile_url'] +"'>"+statuses[t]['user']['screen_name']+
+	$(temp).html("<a target='_blank' class='from_user' href='http://identi.ca/"+ statuses[t]['from_user'] +"'>"+statuses[t]['from_user']+
                      "</a> &nbsp;"+statuses[t]['text']);
 	profileImg = $("<img></img>");
-	profileImg.attr('src',statuses[t]['user']['profile_image_url']);
+	profileImg.attr('src',statuses[t]['profile_image_url']);
 	profileImg.attr('class','profile_image');
 	profileImg.attr('height',43);
 	profileImg.attr('width',43);

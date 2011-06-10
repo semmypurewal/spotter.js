@@ -5,11 +5,17 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
+    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs)  {
+
+    /**if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
     }
 
@@ -23,9 +29,9 @@
 	spotterjs.modules.flickr = {};
     } else if(typeof spotterjs.modules.flickr !== "object")  {
 	throw new Error("spotterjs.modules.flickr is not an object!");
-    }
+    }**/
 
-    spotterjs.modules.flickr.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
 
 	if(options === undefined || options.api_key === undefined || (options.q === undefined && options.tags === undefined))  {
@@ -79,7 +85,7 @@
 
     };
 
-    spotterjs.modules.flickr.feeds = function(options)  {
+    ns.feeds = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var tags = options.tags || null;
@@ -115,4 +121,4 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "flickr");

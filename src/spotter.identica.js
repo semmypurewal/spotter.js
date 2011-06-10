@@ -4,28 +4,14 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
-    if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
-
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.identica) {
-	spotterjs.modules.identica = {};
-    } else if(typeof spotterjs.modules.identica != "object")  {
-	throw new Error("spotterjs.modules.identica is not an object!");
-    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
     /**
      * Required options: q (searchString)
@@ -38,7 +24,7 @@
      *       this should work just like the twitter module.  It may be possible
      *       to merge the two modules somehow.
      */
-    spotterjs.modules.identica.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var refreshURL = "";
@@ -79,7 +65,7 @@
 	};
     };
 
-    spotterjs.modules.identica.realtimesearch = function(options)  {
+    ns.realtimesearch = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var searchString = options.q;
@@ -123,4 +109,4 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "identica");

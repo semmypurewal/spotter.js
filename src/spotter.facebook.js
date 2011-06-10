@@ -3,30 +3,18 @@
  * Copyright (C) 2010-2011 Semmy Purewal
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
     if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
     }
     
-    if(!spotterjs.util)  {
-	throw new Error("spotter.util not yet loaded!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else {
-	if(typeof spotterjs.modules != "object")  {
-	    throw new Error("spotterjs.modules is not an object!");
-	}
-    }
-    
-    if(!spotterjs.modules.facebook) { 
-	spotterjs.modules.facebook = {};
-    } else if(typeof spotterjs.modules.facebook != "object")  {
-	throw new Error("spotterjs.modules.facebook is not an object!");
-    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
     /**
      * Required options: q
@@ -35,7 +23,7 @@
      * update: true/false depending on whether there are new tweets
      * data: the new tweet objects themselves
      */
-    spotterjs.modules.facebook.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var searchString = options.q;
@@ -72,4 +60,4 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "facebook");

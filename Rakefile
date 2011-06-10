@@ -34,7 +34,7 @@ end
 # runs jslint
 task :lint do
   Dir.open('src/') do |d|
-    d.select { |file| file.match /spotter.*\.js$/ }.each  { |m|
+    d.select { |file| file.match /^spotter.*\.js$/ }.each  { |m|
       puts "running jslint on src/#{m}"
       `support/jslint/jslint --passfail --browser --laxbreak src/#{m}`
     }

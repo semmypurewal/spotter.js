@@ -3,11 +3,16 @@
  * Copyright (C) 2010 Semmy Purewal
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
+    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs)  {
+    /**if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
     }
 
@@ -25,7 +30,7 @@
 	spotterjs.modules.twitpic = {};
     } else if(typeof spotterjs.modules.twitpic != "object")  {
 	throw new Error("spotterjs.modules.twitpic is not an object!");
-    }
+    }**/
 
     /**
      * Required options: searchString
@@ -45,7 +50,7 @@
      * update: true/false depending on whether there are new tweets
      * data: the tweet objects themselves
      */
-    spotterjs.modules.twitpic.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var refreshURL = "";
@@ -87,4 +92,4 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "twitpic");

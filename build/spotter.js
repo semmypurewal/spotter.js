@@ -30,7 +30,6 @@
 	var buffer = [];
 	var isBuffered;
 	var bufferTimer;
-
 	
 	window.spotterjs[varName] = this;
 	
@@ -201,8 +200,6 @@
 		clearTimeout(timer);
 	    }
 	};
-	
-
     
 	/**
          * Register an observer with this object
@@ -389,30 +386,16 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
-    if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
-    }
-    
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
 
-    if(!spotterjs.modules)  {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs.modules.delicious)  {
-	spotterjs.modules.delicious = {};
-    } else if(typeof spotterjs.modules.delicious != "object")  {
-	throw new Error("spotterjs.modules.delicious is not an object!");
-    }
-
-
-    spotterjs.modules.delicious.recent = function(options)  {
+    ns.recent = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var find = function (item, array)  {
@@ -463,7 +446,7 @@
      *
      * @constructor
      */
-    spotterjs.modules.delicious.tags = function(options)  {
+    ns.tags = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var tags = options.tags;
@@ -516,36 +499,24 @@
 	
 
     };
-})(window);
+})(window, "delicious");
 /**
  * spotter.facebook.js
  * Copyright (C) 2010-2011 Semmy Purewal
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
     if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
     }
     
-    if(!spotterjs.util)  {
-	throw new Error("spotter.util not yet loaded!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else {
-	if(typeof spotterjs.modules != "object")  {
-	    throw new Error("spotterjs.modules is not an object!");
-	}
-    }
-    
-    if(!spotterjs.modules.facebook) { 
-	spotterjs.modules.facebook = {};
-    } else if(typeof spotterjs.modules.facebook != "object")  {
-	throw new Error("spotterjs.modules.facebook is not an object!");
-    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
     /**
      * Required options: q
@@ -554,7 +525,7 @@
      * update: true/false depending on whether there are new tweets
      * data: the new tweet objects themselves
      */
-    spotterjs.modules.facebook.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var searchString = options.q;
@@ -591,7 +562,7 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "facebook");
 /**
  * spotter.flickr.js
  * Copyright (C) 2010 Semmy Purewal
@@ -599,11 +570,17 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
+    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs)  {
+
+    /**if(!spotterjs)  {
 	throw new Error("spotter not yet loaded!");
     }
 
@@ -617,9 +594,9 @@
 	spotterjs.modules.flickr = {};
     } else if(typeof spotterjs.modules.flickr !== "object")  {
 	throw new Error("spotterjs.modules.flickr is not an object!");
-    }
+    }**/
 
-    spotterjs.modules.flickr.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
 
 	if(options === undefined || options.api_key === undefined || (options.q === undefined && options.tags === undefined))  {
@@ -673,7 +650,7 @@
 
     };
 
-    spotterjs.modules.flickr.feeds = function(options)  {
+    ns.feeds = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var tags = options.tags || null;
@@ -709,35 +686,21 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "flickr");
 /**
  * spotter.identica.js
  * Copyright (C) 2010 Semmy Purewal
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
-    if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
-
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.identica) {
-	spotterjs.modules.identica = {};
-    } else if(typeof spotterjs.modules.identica != "object")  {
-	throw new Error("spotterjs.modules.identica is not an object!");
-    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
     /**
      * Required options: q (searchString)
@@ -750,7 +713,7 @@
      *       this should work just like the twitter module.  It may be possible
      *       to merge the two modules somehow.
      */
-    spotterjs.modules.identica.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var refreshURL = "";
@@ -791,7 +754,7 @@
 	};
     };
 
-    spotterjs.modules.identica.realtimesearch = function(options)  {
+    ns.realtimesearch = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var searchString = options.q;
@@ -835,17 +798,22 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "identica");
 /**
  * spotter.twitpic.js
  * Copyright (C) 2010 Semmy Purewal
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
 
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
+    }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs)  {
+    /**if(!spotterjs)  {
 	throw new Error("spotterjs not yet loaded!");
     }
 
@@ -863,7 +831,7 @@
 	spotterjs.modules.twitpic = {};
     } else if(typeof spotterjs.modules.twitpic != "object")  {
 	throw new Error("spotterjs.modules.twitpic is not an object!");
-    }
+    }**/
 
     /**
      * Required options: searchString
@@ -883,7 +851,7 @@
      * update: true/false depending on whether there are new tweets
      * data: the tweet objects themselves
      */
-    spotterjs.modules.twitpic.search = function(options)  {
+    ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var refreshURL = "";
@@ -925,7 +893,7 @@
 	    return processedData;
 	};
     };
-})(window);
+})(window, "twitpic");
 /**
  * spotter.twitter.js
  * Copyright (C) 2010 Semmy Purewal
@@ -975,7 +943,7 @@
 	    }
 	}
 
-	this.base = function(b)  {
+	this.baseURL = function(b)  {
 	    if(b && typeof b === "string")  {
 		base = b;
 	    }
@@ -983,10 +951,10 @@
 		return base;
 	    }
 	};
-	this.base('http://search.twitter.com/search.json');
+	this.baseURL('http://search.twitter.com/search.json');
 
 	this.url = function()  {
-	    var url = this.base();
+	    var url = this.baseURL();
 	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
 	    url += (lang)?'&lang='+lang:'';
 	    return url;

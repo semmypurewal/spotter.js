@@ -6,30 +6,16 @@
  *
  */
 
-(function(window)  {
+(function(window, name)  {
     var spotterjs = window.spotterjs;
-    if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
-    }
-    
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
 
-    if(!spotterjs.modules)  {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
+    if(!spotterjs || !spotterjs.verify)  {
+	throw new Error("problem with spotter.js file!");
     }
+    spotterjs.verify(['util','modules']);
+    var ns = spotterjs.namespace(name);
 
-    if(!spotterjs.modules.delicious)  {
-	spotterjs.modules.delicious = {};
-    } else if(typeof spotterjs.modules.delicious != "object")  {
-	throw new Error("spotterjs.modules.delicious is not an object!");
-    }
-
-
-    spotterjs.modules.delicious.recent = function(options)  {
+    ns.recent = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 
 	var find = function (item, array)  {
@@ -80,7 +66,7 @@
      *
      * @constructor
      */
-    spotterjs.modules.delicious.tags = function(options)  {
+    ns.tags = function(options)  {
 	spotterjs.modules.Module.call(this,options);
 	
 	var tags = options.tags;
@@ -133,4 +119,4 @@
 	
 
     };
-})(window);
+})(window, "delicious");
