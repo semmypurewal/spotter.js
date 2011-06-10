@@ -326,10 +326,13 @@
      * @constructor
      * The general Module from which everything else inherits
      */
-    spotterjs.modules.Module = function(options) {
+    spotterjs.modules.Module = function(options, opts) {
 	var period;
+	var generalOptions = ['period'];
+
 	if(options.period !== undefined && typeof(options.period)==="number")  {
 	    period = options.period;
+	    delete options.period;
 	}  else  {
 	    period = 45;
 	}
@@ -342,17 +345,44 @@
 	    }
 	};
 
-	this.verifyOptions = function(required, opts) {
+	var contains = function(arr, item)  {
 	    var i;
-	    for(i = 0; i < required.length; i++)  {
-		if(opts[required[i]] === undefined || opts[required[i]] === "")  {
-		    throw new Error("this module requires nonempty option "+required[i]);
+	    for(i=0; i < arr.length; i++)  {
+		if(arr[i]===item)  {
+		    return true;
+		}
+	    }
+	    return false;
+	};
+
+	var optionsProcess = function(opts)  {
+	    var i;
+	    for(i = 0; i < opts.require.length; i++)  {
+		if(options[opts.require[i]] === undefined || options[opts.require[i]] === "")  {
+		    throw new Error("this module requires nonempty option "+opts.require[i]);
+		}
+	    } 
+	    for(i in options)  {
+		if(!contains(opts.allow, i) && !contains(generalOptions, i) && !contains(opts.require, i))  {
+		    throw new Error("option '" + i + "' not allowed");
 		}
 	    }
 	};
+
+	this.baseURL = function(b)  {
+	    if(b && typeof b === "string")  {
+		base = b;
+	    }
+	    else  {
+		return base;
+	    }
+	};
+
+	//var optionsProcess = this.options;
+	if(opts)  {
+	    optionsProcess(opts);
+	}
     };
-
-
     /************************************ END MODULES ***********************************/
 
 

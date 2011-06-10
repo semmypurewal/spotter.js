@@ -12,26 +12,6 @@
     spotterjs.verify(['util','modules']);
     var ns = spotterjs.namespace(name);
 
-    /**if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
-    }
-
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
-
-    if(!spotterjs.modules) { 
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.twitpic)  {
-	spotterjs.modules.twitpic = {};
-    } else if(typeof spotterjs.modules.twitpic != "object")  {
-	throw new Error("spotterjs.modules.twitpic is not an object!");
-    }**/
-
     /**
      * Required options: searchString
      * Other available options: ?

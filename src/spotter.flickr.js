@@ -14,23 +14,6 @@
     spotterjs.verify(['util','modules']);
     var ns = spotterjs.namespace(name);
 
-
-    /**if(!spotterjs)  {
-	throw new Error("spotter not yet loaded!");
-    }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules !== "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.flickr) { 
-	spotterjs.modules.flickr = {};
-    } else if(typeof spotterjs.modules.flickr !== "object")  {
-	throw new Error("spotterjs.modules.flickr is not an object!");
-    }**/
-
     ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
 

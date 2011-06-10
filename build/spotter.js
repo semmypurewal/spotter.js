@@ -326,10 +326,13 @@
      * @constructor
      * The general Module from which everything else inherits
      */
-    spotterjs.modules.Module = function(options) {
+    spotterjs.modules.Module = function(options, opts) {
 	var period;
+	var generalOptions = ['period'];
+
 	if(options.period !== undefined && typeof(options.period)==="number")  {
 	    period = options.period;
+	    delete options.period;
 	}  else  {
 	    period = 45;
 	}
@@ -342,17 +345,44 @@
 	    }
 	};
 
-	this.verifyOptions = function(required, opts) {
+	var contains = function(arr, item)  {
 	    var i;
-	    for(i = 0; i < required.length; i++)  {
-		if(opts[required[i]] === undefined || opts[required[i]] === "")  {
-		    throw new Error("this module requires nonempty option "+required[i]);
+	    for(i=0; i < arr.length; i++)  {
+		if(arr[i]===item)  {
+		    return true;
+		}
+	    }
+	    return false;
+	};
+
+	var optionsProcess = function(opts)  {
+	    var i;
+	    for(i = 0; i < opts.require.length; i++)  {
+		if(options[opts.require[i]] === undefined || options[opts.require[i]] === "")  {
+		    throw new Error("this module requires nonempty option "+opts.require[i]);
+		}
+	    } 
+	    for(i in options)  {
+		if(!contains(opts.allow, i) && !contains(generalOptions, i) && !contains(opts.require, i))  {
+		    throw new Error("option '" + i + "' not allowed");
 		}
 	    }
 	};
+
+	this.baseURL = function(b)  {
+	    if(b && typeof b === "string")  {
+		base = b;
+	    }
+	    else  {
+		return base;
+	    }
+	};
+
+	//var optionsProcess = this.options;
+	if(opts)  {
+	    optionsProcess(opts);
+	}
     };
-
-
     /************************************ END MODULES ***********************************/
 
 
@@ -579,23 +609,6 @@
     spotterjs.verify(['util','modules']);
     var ns = spotterjs.namespace(name);
 
-
-    /**if(!spotterjs)  {
-	throw new Error("spotter not yet loaded!");
-    }
-
-    if(!spotterjs.modules) {
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules !== "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.flickr) { 
-	spotterjs.modules.flickr = {};
-    } else if(typeof spotterjs.modules.flickr !== "object")  {
-	throw new Error("spotterjs.modules.flickr is not an object!");
-    }**/
-
     ns.search = function(options)  {
 	spotterjs.modules.Module.call(this,options);    
 
@@ -813,26 +826,6 @@
     spotterjs.verify(['util','modules']);
     var ns = spotterjs.namespace(name);
 
-    /**if(!spotterjs)  {
-	throw new Error("spotterjs not yet loaded!");
-    }
-
-    if(!spotterjs.util)  {
-	throw new Error("spotterjs.util not yet loaded!");
-    }
-
-    if(!spotterjs.modules) { 
-	spotterjs.modules = {};
-    } else if(typeof spotterjs.modules != "object")  {
-	throw new Error("spotterjs.modules is not an object!");
-    }
-
-    if(!spotterjs.modules.twitpic)  {
-	spotterjs.modules.twitpic = {};
-    } else if(typeof spotterjs.modules.twitpic != "object")  {
-	throw new Error("spotterjs.modules.twitpic is not an object!");
-    }**/
-
     /**
      * Required options: searchString
      * Other available options: ?
@@ -919,44 +912,33 @@
      * data: the new tweet objects themselves (if any)
      */
     ns.search = function(options)  {
-	spotterjs.modules.Module.call(this,options);
+	spotterjs.modules.Module.call(this,options, {
+	    'require':['q'],
+	    'allow':['lang','exclude']
+	});
+	this.baseURL('http://search.twitter.com/search.json');
 
 	var refreshURL = "";
-	var searchString = options.q;
 	var exclude = (options.exclude !== undefined)?options.exclude.split(","):[];
-	var lang = options.lang;
 	var i;
 	var excludeREString = "";
 	var base = "";
 
-	this.verifyOptions(['q'], options);
-	
-	if(exclude !== undefined)  {
-	    for(i=0;i < exclude.length; i++)  {
-		if(exclude[i] === "twitpic"||
-		   exclude[i] === "tweetphoto")  {
-		    excludeREString += (excludeREString==="")?exclude[i]:"|"+exclude[i];
-		}
-		else  {
-		    throw new Error(exclude[i] + " not a valid exclude string, try 'tweetphoto' and/or 'twitpic'");
-		}
-	    }
-	}
-
-	this.baseURL = function(b)  {
-	    if(b && typeof b === "string")  {
-		base = b;
-	    }
-	    else  {
-		return base;
-	    }
-	};
-	this.baseURL('http://search.twitter.com/search.json');
-
 	this.url = function()  {
+	    var opt;
+	    var a = '';
 	    var url = this.baseURL();
-	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
-	    url += (lang)?'&lang='+lang:'';
+	    if(refreshURL && refreshURL !== "")  {
+		url += refreshURL;
+	    } else  {
+		url+='?';
+		for(opt in options)  {
+		    if(options.hasOwnProperty(opt))  {
+			url += a+opt+'='+escape(options[opt]);
+			a = '&';
+		    }
+		}
+	    }
 	    return url;
 	};
 	

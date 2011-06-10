@@ -23,44 +23,33 @@
      * data: the new tweet objects themselves (if any)
      */
     ns.search = function(options)  {
-	spotterjs.modules.Module.call(this,options);
+	spotterjs.modules.Module.call(this,options, {
+	    'require':['q'],
+	    'allow':['lang','exclude']
+	});
+	this.baseURL('http://search.twitter.com/search.json');
 
 	var refreshURL = "";
-	var searchString = options.q;
 	var exclude = (options.exclude !== undefined)?options.exclude.split(","):[];
-	var lang = options.lang;
 	var i;
 	var excludeREString = "";
 	var base = "";
 
-	this.verifyOptions(['q'], options);
-	
-	if(exclude !== undefined)  {
-	    for(i=0;i < exclude.length; i++)  {
-		if(exclude[i] === "twitpic"||
-		   exclude[i] === "tweetphoto")  {
-		    excludeREString += (excludeREString==="")?exclude[i]:"|"+exclude[i];
-		}
-		else  {
-		    throw new Error(exclude[i] + " not a valid exclude string, try 'tweetphoto' and/or 'twitpic'");
-		}
-	    }
-	}
-
-	this.baseURL = function(b)  {
-	    if(b && typeof b === "string")  {
-		base = b;
-	    }
-	    else  {
-		return base;
-	    }
-	};
-	this.baseURL('http://search.twitter.com/search.json');
-
 	this.url = function()  {
+	    var opt;
+	    var a = '';
 	    var url = this.baseURL();
-	    url += (refreshURL !== "")?refreshURL:'?q='+escape(searchString);
-	    url += (lang)?'&lang='+lang:'';
+	    if(refreshURL && refreshURL !== "")  {
+		url += refreshURL;
+	    } else  {
+		url+='?';
+		for(opt in options)  {
+		    if(options.hasOwnProperty(opt))  {
+			url += a+opt+'='+escape(options[opt]);
+			a = '&';
+		    }
+		}
+	    }
 	    return url;
 	};
 	
@@ -83,7 +72,6 @@
 	    }
 
 	    processedData.update = (processedData.data.length>0)?true:false;
-
 	    return processedData;
 	};
     };
