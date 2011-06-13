@@ -13,7 +13,7 @@ function init()  {
     //create your spotter with the {buffer:true} option sent in as a spotter option
     var s = new Spotter("twitter.search",
 			{q:"bieber", period:30,exclude:"tweetphoto,twitpic"},
-			{buffer:true});
+			{buffer:true, bufferTimeout:750});
 
     //register your observer to handle a single tweet
     s.register(function(tweet) {

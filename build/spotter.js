@@ -20,7 +20,9 @@
      * @throws {Error} An error is thrown if there is a problem loading the module
      */
     spotterjs.Spotter = function(type, options, spotter_options)  {
-	spotterjs.Spotter.instanceCount = (spotterjs.Spotter.instanceCount === undefined)?1:spotterjs.Spotter.instanceCount+1;
+	spotterjs.Spotter.instanceCount = (spotterjs.Spotter.instanceCount === undefined)?
+	    1:
+	    spotterjs.Spotter.instanceCount+1;
 	var varName =  "_so"+spotterjs.Spotter.instanceCount;
 	var spotting = false;
 	var lastCallReturned = true;
@@ -31,9 +33,13 @@
 	var buffer = [];
 	var isBuffered;
 	var bufferTimer;
+	var bufferTimeout;
 
 	if(spotter_options && spotter_options.buffer === true)  {
 	    isBuffered = true;
+	    bufferTimeout = (spotter_options.bufferTimeout && spotter_options.bufferTimeout > 0)?
+		spotter_options.bufferTimeout:
+		1000;
 	}
 	
 	window.spotterjs[varName] = this;
@@ -100,7 +106,7 @@
 		bufferTimer = setTimeout(function()  {
 		    notifyObservers(buffer.pop());
 		    bufferedNotifyObservers();
-		}, 2000);
+		}, bufferTimeout);
 	    } else  {
 		clearTimeout(bufferTimer);
 		bufferTimer = false;
