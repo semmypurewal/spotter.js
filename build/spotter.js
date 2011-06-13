@@ -968,7 +968,7 @@
     ns.user = function(options)  {
 	spotterjs.modules.Module.call(this,options, {
 	    'require':['screen_name'],
-	    'allow':[]
+	    'allow':['count']
 	});
 	this.baseURL('http://api.twitter.com/1/statuses/user_timeline.json');
 
@@ -987,7 +987,7 @@
 		}
 	    }
 	    if(last_id)  {
-		url += "&since_id"+last_id;
+		url += "&since_id="+last_id;
 	    }
 	    return url;
 	};
