@@ -76,6 +76,44 @@
 	};
     };
 
+    ns.user = function(options)  {
+	spotterjs.modules.Module.call(this,options, {
+	    'require':['screen_name'],
+	    'allow':[]
+	});
+	this.baseURL('http://api.twitter.com/1/statuses/user_timeline.json');
+
+	var i;
+	var last_id;
+
+	this.url = function()  {
+	    var opt;
+	    var a = '';
+	    var url = this.baseURL();
+	    url+='?';
+	    for(opt in options)  {
+		if(options.hasOwnProperty(opt))  {
+		    url += a+opt+'='+escape(options[opt]);
+		    a = '&';
+		}
+	    }
+	    if(last_id)  {
+		url += "&since_id"+last_id;
+	    }
+	    return url;
+	};
+	
+	this.process = function(rawData)  {
+	    var processedData = {};
+	    if(rawData.length > 0)  {
+		last_id = rawData[0].id;
+	    }
+	    processedData.data = rawData;
+	    processedData.update = (processedData.data.length>0)?true:false;
+	    return processedData;
+	};
+    };
+
 
     /**
      * Required options:
