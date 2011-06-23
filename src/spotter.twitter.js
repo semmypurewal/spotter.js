@@ -106,7 +106,7 @@
 	this.process = function(rawData)  {
 	    var processedData = {};
 	    if(rawData.length > 0)  {
-		last_id = rawData[0].id;
+		last_id = rawData[0].id_str;
 	    }
 	    processedData.data = rawData;
 	    processedData.update = (processedData.data.length>0)?true:false;
