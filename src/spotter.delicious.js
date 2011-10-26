@@ -29,7 +29,7 @@
 
 	var lastTop;
 	this.url = function()  {
-	    var url = 'http://feeds.delicious.com/v2/json/recent/?count=100';
+	    var url = 'http://feeds.delicious.com/v2/json/recent?count=100';
 	    return url;
 	};
 

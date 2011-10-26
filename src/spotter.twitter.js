@@ -129,7 +129,7 @@
 	var lastTrends;
 	
 	this.url = function()  {
-	    var url = "http://api.twitter.com/trends.json?";
+	    var url = "http://api.twitter.com/1/trends/1.json?";
 	    if(options !== undefined && options.exclude !== undefined) { 
 		url+="exclude="+options.exclude;
 	    }
@@ -138,15 +138,15 @@
 	
 	this.process = function(rawData)  {
 	    var processedData = {};
-	    var trends = rawData.trends;
+	    var trends = rawData[0].trends;
 	    if(lastTrends === null)  {
-		processedData = {data:{"added":rawData.trends, "removed":{}, "trends":rawData.trends}};
+		processedData = {data:{"added":trends, "removed":{}, "trends":trends}};
 	    }
 	    else  {
-		var tempArray = spotterjs.util.complements(rawData.trends, lastTrends);
-		processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":rawData.trends}};
+		var tempArray = spotterjs.util.complements(trends, lastTrends);
+		processedData = {data:{"added":tempArray[0],"removed":tempArray[1], "trends":trends}};
 	    }
-	    lastTrends = rawData.trends;
+	    lastTrends = trends;
 	    processedData.update = (processedData.data.added.length>0||processedData.data.removed.length>0)?true:false;
 	    return processedData;
 	};
