@@ -574,11 +574,11 @@
 
 	this.process = function(rawData)  {
 	    var processedData = {};
-
 	    processedData.data = [];
 	    //filter the data
 	    for(i in rawData.data)  {
-		if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime) && rawData.data[i].type === 'status')  {
+		if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime) && rawData.data[i].message !== undefined)  {
+		//if((lastCreatedTime === null || rawData.data[i].created_time > lastCreatedTime))  {
 		    rawData.data[i].profile_image_url = "http://graph.facebook.com/"+rawData.data[i].from.id+"/picture";
 		    rawData.data[i].profile_url = "http://www.facebook.com/people/"+rawData.data[i].from.name.replace(" ","-")+"/"+rawData.data[i].from.id;
 		    processedData.data.push(rawData.data[i]);
