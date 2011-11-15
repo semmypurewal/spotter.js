@@ -933,7 +933,7 @@
 	    } else  {
 		url+='?';
 		for(opt in options)  {
-		    if(options.hasOwnProperty(opt))  {
+		    if(options.hasOwnProperty(opt) && opt !== "exclude")  {
 			url += a+opt+'='+escape(options[opt]);
 			a = '&';
 		    }
