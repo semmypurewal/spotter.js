@@ -198,6 +198,9 @@
 		    head[0].removeChild(lastScriptTag);
 		}
 		clearTimeout(timer);
+		if(bufferTimer) {
+		    clearTimeout(bufferTimer);
+		}
 	    }
 	};
     
