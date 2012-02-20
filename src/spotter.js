@@ -102,14 +102,16 @@
          * @private
          */
 	var bufferedNotifyObservers = function()  {
-	    if(buffer.length > 0)  {
-		bufferTimer = setTimeout(function()  {
-		    notifyObservers(buffer.pop());
-		    bufferedNotifyObservers();
-		}, bufferTimeout);
-	    } else  {
-		clearTimeout(bufferTimer);
-		bufferTimer = false;
+	    if(spotting) {
+		if(buffer.length > 0)  {
+		    bufferTimer = setTimeout(function()  {
+			notifyObservers(buffer.pop());
+			bufferedNotifyObservers();
+		    }, bufferTimeout);
+		} else  {
+		    clearTimeout(bufferTimer);
+		    bufferTimer = false;
+		}
 	    }
 	};
 
