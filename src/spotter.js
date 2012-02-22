@@ -222,7 +222,7 @@
 	    }
 	};
     
-	this.isSpotting() = function() {
+	this.isSpotting = function() {
 	    return spotting;
 	};
     }; //end spotter constructor
